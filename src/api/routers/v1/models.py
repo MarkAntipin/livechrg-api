@@ -19,11 +19,12 @@ class Event(BaseModel):
     charged_at: datetime
     source: str
     name: str | None = None
+    is_problem: bool | None = None
 
 
 class Charger(BaseModel):
-    network: str
-    ocpi_ids: list[str]
+    network: str | None = None
+    ocpi_ids: list[str] | None = None
 
 
 class Comment(BaseModel):
@@ -45,7 +46,7 @@ class Station(BaseModel):
     events: list[Event]
     comments: list[Comment]
     last_event: Event | None = None
-    avarage_rating: float | None = None
+    average_rating: float | None = None
     geo: dict | None = None
     address: str | None = None
     ocpi_ids: list[str] | None = None

@@ -71,15 +71,16 @@ class StationsServices:
                 chargers=[
                     Charger(
                         network=charger['network'],
-                        ocpi_ids=charger['ocpi_ids']
+                        ocpi_ids=json.loads(charger['ocpi_ids']) if charger['ocpi_ids'] else None
                     )
-                    for charger in chargers
+                    for charger in chargers if charger['network']
                 ],
                 events=[
                     Event(
                         charged_at=event['charged_at'],
                         source=event['source'],
-                        name=event['name']
+                        name=event['name'],
+                        is_problem=event['is_problem']
                     )
                     for event in events
                 ],
@@ -98,7 +99,8 @@ class StationsServices:
                 last_event=Event(
                     charged_at=last_event['charged_at'],
                     source=last_event['source'],
-                    name=last_event['name']
+                    name=last_event['name'],
+                    is_problem=last_event['is_problem']
                 ) if last_event else None,
                 average_rating=row['rating'] or average_rating
             )

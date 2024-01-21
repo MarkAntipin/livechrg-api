@@ -1,8 +1,9 @@
-def calculate_average_rating(comments_rating: list[int], scale: int = 10) -> float | None:
-    total_rating = sum(comments_rating)
-    count = len(comments_rating)
+def calculate_average_rating(comments_rating: list[int]) -> float | None:
+    # Apply linear transformation to map binary scores to ratings
+    ratings = [((score + 1) / 2) * 9 + 1 for score in comments_rating]
 
-    if count == 0:
-        return None
+    if ratings:
+        average_rating = sum(ratings) / len(ratings)
+        return average_rating
     else:
-        return float(format(total_rating / count * scale, '.2f'))
+        return None

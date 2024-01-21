@@ -16,7 +16,8 @@ class EventsRepository:
                 e.name,
                 e.source,
                 e.charged_at,
-                e.station_id
+                e.station_id,
+                e.is_problem
             FROM
                 events e
             WHERE

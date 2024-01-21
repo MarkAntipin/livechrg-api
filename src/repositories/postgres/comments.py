@@ -17,7 +17,8 @@ class CommentsRepository:
                 c.user_name,
                 c.source,
                 c.created_at,
-                c.station_id
+                c.station_id,
+                c.rating
             FROM
                 comments c
             WHERE

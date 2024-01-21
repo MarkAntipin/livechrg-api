@@ -1,0 +1,61 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    networks:
+      - api_network
+    environment:
+      PG_HOST: pg
+      PG_PORT: 5432
+      PG_USER: livechrg-api
+      PG_PASSWORD: livechrg-api  # change on production
+      PG_DATABASE: livechrg-api
+    depends_on:
+      pg:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+
+  migrate:
+    image: migrate/migrate
+    ports:
+      - "8080:8080"
+    networks:
+      - api_network
+    volumes:
+      - ./migrations:/migrations
+    command: [
+      "-path",
+      "/migrations",
+      "-database",
+      "postgres://livechrg-api:livechrg-api@pg:5432/livechrg-api?sslmode=disable",
+      "up"
+    ]   # change on production
+    depends_on:
+      pg:
+        condition: service_healthy
+
+  pg:
+    image: postgis/postgis:14-3.3-alpine
+    ports:
+      - "5433:5432"
+    networks:
+      - api_network
+    volumes:
+      - ./database:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: livechrg-api
+      POSTGRES_PASSWORD: livechrg-api  # change on production
+      POSTGRES_DB: livechrg-api
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U livechrg-api" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+networks:
+    api_network:

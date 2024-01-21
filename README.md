@@ -29,6 +29,11 @@ poetry install
 migrate -path ./migrations -database "postgres://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DATABASE}?sslmode=disable" up
 ```
 
+**Run App**
+```
+python run.py
+```
+
 ### With Docker
 Build image:
 ```

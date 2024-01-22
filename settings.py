@@ -36,4 +36,16 @@ class AppSettings(BaseSettings):
         case_sensitive = False
 
 
+class TestSettings(BaseSettings):
+    PG_HOST: str = 'localhost'
+    PG_USER: str = 'livechrg-api'
+    PG_PASSWORD: str = 'livechrg-api'
+    PG_DATABASE: str = 'livechrg-api'
+    PG_PORT: int = 5437
+
+    class Config:
+        case_sensitive = False
+        env_prefix = "TEST_"
+
+
 app_settings = AppSettings()

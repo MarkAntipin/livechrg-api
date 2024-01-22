@@ -4,6 +4,6 @@ def calculate_average_rating(comments_rating: list[int]) -> float | None:
 
     if ratings:
         average_rating = sum(ratings) / len(ratings)
-        return average_rating
+        return float(format(average_rating, '.1f'))
     else:
         return None

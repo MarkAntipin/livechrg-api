@@ -60,6 +60,11 @@ migrate create -ext sql -dir migrations {migration-name}
 poetry run ruff check . --fix
 ```
 
+### Unit Tests:
+```
+poetry run pytest -v tests
+```
+
 ### Functional Tests:
 **Run postgres for tests**
 ```
@@ -67,11 +72,11 @@ docker run --name livechrg-api-pg -e POSTGRES_USER=livechrg-api -e POSTGRES_PASS
 ```
 **Apply migrations**
 ```
-migrate -path ./migrations -database "postgres://livechrg-api:livechrg-api@localhost:5436/livechrg-api?sslmode=disable" up
+migrate -path ./migrations -database "postgres://livechrg-api:livechrg-api@localhost:5437/livechrg-api?sslmode=disable" up
 ```
 **Apply migrations**
 ```
-pytest -v tests_functional
+poetry run pytest -v tests_functional
 ```
 **Stop postgres for tests**
 ```

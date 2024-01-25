@@ -94,6 +94,7 @@ async def add_event(
     station_id: int,
     source: str,
     is_problem: bool,
+    charged_at: datetime = datetime.now(UTC),
     name: str | None = None
 ) -> None:
     await pg.execute(
@@ -110,7 +111,7 @@ async def add_event(
         """,
         station_id,
         source,
-        datetime.now(UTC),
+        charged_at,
         name,
         is_problem
     )

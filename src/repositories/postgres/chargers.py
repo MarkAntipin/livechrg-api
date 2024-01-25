@@ -1,3 +1,4 @@
+import json
 from collections import defaultdict
 
 import asyncpg
@@ -30,3 +31,26 @@ class ChargersRepository:
         for row in rows:
             res[row['station_id']].append(row)
         return res
+
+    async def add_charger(
+        self,
+        station_id: int,
+        ocpi_ids: dict | None = None,
+        network: str | None = None
+    ) -> None:
+        async with self.pool.acquire() as conn:
+            query = """
+                INSERT INTO chargers (
+                    station_id,
+                    ocpi_ids,
+                    network
+                )
+                VALUES
+                    ($1, $2, $3)
+            """
+            await conn.execute(
+                query,
+                station_id,
+                json.dumps(ocpi_ids) if ocpi_ids else None,
+                network
+            )

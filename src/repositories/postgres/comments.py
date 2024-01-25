@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import datetime
 
 import asyncpg
 
@@ -35,3 +36,35 @@ class CommentsRepository:
         for row in rows:
             res[row['station_id']].append(row)
         return res
+
+    async def add_comment(
+        self,
+        station_id: int,
+        text: str,
+        source: str,
+        created_at: datetime,
+        user_name: str | None = None,
+        rating: int = None,
+    ) -> None:
+        async with self.pool.acquire() as conn:
+            query = """
+                INSERT INTO comments (
+                    station_id,
+                    text,
+                    created_at,
+                    user_name,
+                    source,
+                    rating
+                )
+                VALUES
+                    ($1, $2, $3, $4, $5, $6)
+            """
+            await conn.execute(
+                query,
+                station_id,
+                text,
+                created_at,
+                user_name,
+                source,
+                rating
+            )

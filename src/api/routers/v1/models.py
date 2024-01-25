@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
+# get stations
 class Coordinates(BaseModel):
     lat: float
     lon: float
@@ -23,7 +24,7 @@ class Event(BaseModel):
 
 
 class Charger(BaseModel):
-    network: str | None = None
+    network: str
     ocpi_ids: list[str] | None = None
 
 
@@ -54,3 +55,28 @@ class Station(BaseModel):
 
 class GetStationsByAreaResponse(BaseModel):
     stations: list[Station]
+
+
+# add stations
+class AddComment(BaseModel):
+    text: str
+    created_at: datetime
+    source: str
+    user_name: str | None = None
+    rating: int | None = None
+
+
+class AddStation(BaseModel):
+    coordinates: Coordinates
+    source: Source
+    chargers: list[Charger] | None = None
+    events: list[Event] | None = None
+    comments: list[AddComment] | None = None
+    geo: dict | None = None
+    rating: float | None = None
+    address: str | None = None
+    ocpi_ids: list[str] | None = None
+
+
+class AddStationsRequest(BaseModel):
+    stations: list[AddStation]

@@ -1,3 +1,5 @@
+import json
+
 import asyncpg
 
 
@@ -52,3 +54,103 @@ class StationsRepository:
                 offset
             )
         return rows
+
+    async def get_station_id_by_source(self, source: str, inner_id: int) -> int | None:
+        query = """
+            SELECT
+                station_id
+            FROM
+                sources
+            WHERE
+                source = $1 AND
+                station_inner_id = $2;
+        """
+        async with self.pool.acquire() as conn:
+            row = await conn.fetchrow(
+                query,
+                source,
+                inner_id
+            )
+        return row['station_id'] if row else None
+
+    async def get_station_id_by_coordinates(self, lon: float, lat: float, distance_threshold: int = 100) -> int | None:
+        query = """
+            SELECT
+                id
+            FROM
+                stations
+            WHERE
+                ST_DWithin(coordinates, ST_Point($1, $2)::geography, $3)
+            LIMIT
+                1;
+        """
+        async with self.pool.acquire() as conn:
+            row = await conn.fetchrow(
+                query,
+                lon,
+                lat,
+                distance_threshold
+            )
+        return row['id'] if row else None
+
+    async def add_source(
+            self,
+            station_id: int,
+            inner_id: int,
+            source: str
+    ) -> None:
+        query = """
+            INSERT INTO
+                sources (
+                    station_id,
+                    station_inner_id,
+                    source
+                )
+            VALUES ($1, $2, $3);
+        """
+        async with self.pool.acquire() as conn:
+            await conn.execute(
+                query,
+                station_id,
+                inner_id,
+                source
+            )
+
+    async def add_station(
+            self,
+            lon: float,
+            lat: float,
+            rating: int | None = None,
+            geo: dict | None = None,
+            address: str | None = None,
+            ocpi_ids: list[str] | None = None
+    ) -> int:
+        query = """
+            INSERT INTO
+                stations (
+                    coordinates,
+                    geo,
+                    address,
+                    ocpi_ids,
+                    rating
+                )
+            VALUES (
+                    ST_Point($1, $2),
+                     $3,
+                    $4,
+                    $5,
+                    $6
+                )
+            RETURNING id;
+        """
+        async with self.pool.acquire() as conn:
+            row = await conn.fetchrow(
+                query,
+                lon,
+                lat,
+                json.dumps(geo) if geo else None,
+                address,
+                json.dumps(ocpi_ids) if ocpi_ids else None,
+                rating
+            )
+        return row['id']

@@ -12,6 +12,7 @@ async def test_get_stations_by_area(client: TestClient, pg: asyncpg.Pool) -> Non
     await add_event(pg=pg, station_id=station_id, source='plug_share', is_problem=False)
     await add_charger(pg=pg, station_id=station_id, network='network')
 
+    # act
     resp = client.get(
         '/api/v1/stations',
         params={

@@ -14,7 +14,7 @@ async def test_get_stations_by_area(client: TestClient, pg: asyncpg.Pool) -> Non
 
     # act
     resp = client.get(
-        '/api/v1/stations',
+        '/api/v1/stations-by-area',
         params={
             'ne_lat': 2,
             'ne_lon': 2,

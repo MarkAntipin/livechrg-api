@@ -55,6 +55,38 @@ class StationsRepository:
             )
         return rows
 
+
+    async def get_by_id(
+            self,
+            station_id: int,
+    ) -> asyncpg.Record:
+        query = """
+            SELECT
+                s.id,
+                ST_AsGeoJson(coordinates)::jsonb -> 'coordinates' as coordinates,
+                s.geo,
+                s.address,
+                s.ocpi_ids,
+                s.rating,
+                json_agg(json_build_object(
+                    'station_inner_id', ss.station_inner_id,
+                    'source', ss.source
+                )) AS sources
+            FROM
+                stations s
+            JOIN
+                sources ss ON s.id = ss.station_id
+            WHERE
+                s.id = $1;
+        """
+        async with self.pool.acquire() as conn:
+            station = await conn.fetch(
+                query,
+                station_id
+            )[0]
+        return station
+
+
     async def get_station_id_by_source(self, source: str, inner_id: int) -> int | None:
         query = """
             SELECT

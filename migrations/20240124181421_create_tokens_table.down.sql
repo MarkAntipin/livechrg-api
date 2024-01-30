@@ -1,3 +1,1 @@
-CREATE TABLE IF NOT EXISTS tokens (
-title varchar, body varchar
-);
+DROP TABLE IF EXISTS tokens;

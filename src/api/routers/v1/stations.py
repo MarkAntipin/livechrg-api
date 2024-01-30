@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, Query, Response, status
 
-from src.api.depends import get_stations_service
+from src.api.depends import get_stations_service, check_api_key
 from src.api.routers.v1.models import AddStationsRequest, AreaRequest, GetStationsByAreaResponse
 from src.services.stations import StationsServices
-from src.api.auth import check_api_key
 
 router = APIRouter(prefix='/api/v1', tags=['stations'])
 

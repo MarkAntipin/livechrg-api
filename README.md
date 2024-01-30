@@ -74,7 +74,7 @@ docker run --name livechrg-api-pg -e POSTGRES_USER=livechrg-api -e POSTGRES_PASS
 ```
 migrate -path ./migrations -database "postgres://livechrg-api:livechrg-api@localhost:5437/livechrg-api?sslmode=disable" up
 ```
-**Apply migrations**
+**Run functional tests**
 ```
 poetry run pytest -v tests_functional
 ```

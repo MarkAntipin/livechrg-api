@@ -32,6 +32,8 @@ class AppSettings(BaseSettings):
     TITLE: str = 'LiveCharge API'
     VERSION: str = '0.1.0'
 
+    ADMIN_AUTH_TOKEN: str
+
     class Config:
         case_sensitive = False
 
@@ -43,9 +45,8 @@ class TestSettings(BaseSettings):
     PG_DATABASE: str = 'livechrg-api'
     PG_PORT: int = 5437
 
+    ADMIN_AUTH_TOKEN: str = 'token'
+
     class Config:
         case_sensitive = False
         env_prefix = "TEST_"
-
-
-app_settings = AppSettings()

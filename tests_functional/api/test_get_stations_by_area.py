@@ -1,3 +1,5 @@
+import os
+
 import asyncpg
 from fastapi.testclient import TestClient
 
@@ -20,6 +22,9 @@ async def test_get_stations_by_area(client: TestClient, pg: asyncpg.Pool) -> Non
             'ne_lon': 2,
             'sw_lat': 1,
             'sw_lon': 1,
+        },
+        headers={
+            'Authorization': os.environ['ADMIN_AUTH_TOKEN']
         }
     )
 
@@ -39,3 +44,38 @@ async def test_get_stations_by_area(client: TestClient, pg: asyncpg.Pool) -> Non
     # custom metrics fields
     assert station['average_rating'] == 5
     assert station['last_event']['is_problem'] is False
+
+
+async def test_get_stations_by_area__no_auth_token(client: TestClient, pg: asyncpg.Pool) -> None:
+    # act
+    resp = client.get(
+        '/api/v1/stations',
+        params={
+            'ne_lat': 2,
+            'ne_lon': 2,
+            'sw_lat': 1,
+            'sw_lon': 1,
+        },
+    )
+
+    # assert
+    assert resp.status_code == 401
+
+
+async def test_get_stations_by_area__invalid_auth_token(client: TestClient, pg: asyncpg.Pool) -> None:
+    # act
+    resp = client.get(
+        '/api/v1/stations',
+        params={
+            'ne_lat': 2,
+            'ne_lon': 2,
+            'sw_lat': 1,
+            'sw_lon': 1,
+        },
+        headers={
+            'Authorization': 'invalid_token'
+        }
+    )
+
+    # assert
+    assert resp.status_code == 403

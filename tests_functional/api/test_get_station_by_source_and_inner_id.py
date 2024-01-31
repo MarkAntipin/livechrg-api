@@ -1,3 +1,5 @@
+import os
+
 import asyncpg
 from fastapi.testclient import TestClient
 
@@ -18,6 +20,9 @@ async def test_get_station_by_source_and_inner_id(client: TestClient, pg: asyncp
         params={
             'station_source': 'plug_share',
             'station_inner_id': 1,
+        },
+        headers={
+            'Authorization': os.environ['ADMIN_AUTH_TOKEN']
         }
     )
 
@@ -37,3 +42,20 @@ async def test_get_station_by_source_and_inner_id(client: TestClient, pg: asyncp
     # custom metrics fields
     assert station['average_rating'] == 5
     assert station['last_event']['is_problem'] is False
+
+
+async def test_get_station_by_source_and_inner_id__not_found(client: TestClient, pg: asyncpg.Pool) -> None:
+    #act
+    resp = client.get(
+        '/api/v1/stations',
+        params={
+            'station_source': 'plug_share',
+            'station_inner_id': 1,
+        },
+        headers={
+            'Authorization': os.environ['ADMIN_AUTH_TOKEN']
+        }
+    )
+
+    # assert
+    assert resp.status_code == 404

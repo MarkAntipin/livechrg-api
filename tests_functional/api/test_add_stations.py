@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import UTC, datetime, timedelta
 
 import asyncpg
@@ -31,6 +32,9 @@ async def test_add_stations__station_does_not_exists(client: TestClient, pg: asy
                     ],
                 }
             ]
+        },
+        headers={
+            'Authorization': os.environ['ADMIN_AUTH_TOKEN']
         }
     )
 
@@ -92,6 +96,9 @@ async def test_add_stations__station_with_source_exists(client: TestClient, pg: 
                     ],
                 }
             ]
+        },
+        headers={
+            'Authorization': os.environ['ADMIN_AUTH_TOKEN']
         }
     )
 
@@ -143,6 +150,9 @@ async def test_add_stations__station_with_close_coordinates_exists(client: TestC
                     }
                 }
             ]
+        },
+        headers={
+            'Authorization': os.environ['ADMIN_AUTH_TOKEN']
         }
     )
 
@@ -199,6 +209,9 @@ async def test_add_stations__station_with_source_exists__add_new_events(
                     ],
                 }
             ]
+        },
+        headers={
+            'Authorization': os.environ['ADMIN_AUTH_TOKEN']
         }
     )
 

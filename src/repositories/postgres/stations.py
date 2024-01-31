@@ -77,14 +77,15 @@ class StationsRepository:
             JOIN
                 sources ss ON s.id = ss.station_id
             WHERE
-                s.id = $1;
+                s.id = $1
+            GROUP BY s.id;
         """
         async with self.pool.acquire() as conn:
-            station = await conn.fetch(
+            row = await conn.fetch(
                 query,
                 station_id
             )[0]
-        return station
+        return row if row else None
 
 
     async def get_station_id_by_source(self, source: str, inner_id: int) -> int | None:

@@ -26,6 +26,23 @@ async def get_stations_by_area(
     )
 
 
+@router.get('/stations')
+async def get_station_by_source_and_inner_id(
+        station_source: str,
+        station_inner_id: int,
+        stations_service: StationsServices = Depends(get_stations_service)
+) -> Response:  # If use Station | Response an error will occur while starting the app
+    station = await stations_service.get_by_source_and_inner_id(
+        station_source=station_source,
+        station_inner_id=station_inner_id
+    )
+
+    if station:
+        return station
+
+    return Response(status_code=status.HTTP_404_NOT_FOUND)
+
+
 @router.post('/stations')
 async def add_stations(
     request: AddStationsRequest,
@@ -33,18 +50,3 @@ async def add_stations(
 ) -> Response:
     await stations_service.add_stations(stations=request.stations)
     return Response(status_code=status.HTTP_201_CREATED)
-
-@router.get('/stations-by-source-and-inner-id')
-async def get_station_by_source_and_inner_id(
-        station_source: str,
-        station_inner_id: int,
-        stations_service: StationsServices = Depends(get_stations_service)
-) -> Station | str:
-    station_id = await stations_service.stations_repo.get_station_id_by_source(
-                source=station_source, inner_id=station_inner_id
-            )
-    if station_id:
-        station = stations_service.get_by_id(station_id)
-        if station:
-            return station
-    return 'Station not found'

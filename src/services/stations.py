@@ -133,55 +133,64 @@ class StationsServices:
         return stations
 
 
-    async def get_by_id(
+    async def get_by_source_and_inner_id(
             self,
-            station_id: int,
+            station_source: str,
+            station_inner_id: int
     ) -> Station | None:
+        station_id = await self.stations_repo.get_station_id_by_source(
+            source=station_source, inner_id=station_inner_id
+        )
+
+        if not station_id:
+            return
+
         row = await self.stations_repo.get_by_id(station_id=station_id)
-        if row:
-            (
-                comments_rows_by_station_id,
-                events_rows_by_station_id,
-                charger_rows_by_station_id
-            ) = await self._get_station_extra_data(station_ids=[station_id])
 
-            charger_rows = charger_rows_by_station_id.get(station_id, [])
-            events_rows = events_rows_by_station_id.get(station_id, [])
-            comments_rows = comments_rows_by_station_id.get(station_id, [])
+        if not row:
+            return
 
-            sources = json.loads(row['sources'])
-            coordinates = json.loads(row['coordinates'])
+        (
+            comments_rows_by_station_id,
+            events_rows_by_station_id,
+            charger_rows_by_station_id
+        ) = await self._get_station_extra_data(station_ids=[station_id])
 
-            average_rating = calculate_average_rating(
-                [comments_row['rating'] for comments_row in comments_rows if comments_row['rating']]
-            )
+        charger_rows = charger_rows_by_station_id.get(station_id, [])
+        events_rows = events_rows_by_station_id.get(station_id, [])
+        comments_rows = comments_rows_by_station_id.get(station_id, [])
 
-            events = self._format_events(event_rows=events_rows)
-            last_event = events[0] if events else None
+        sources = json.loads(row['sources'])
+        coordinates = json.loads(row['coordinates'])
 
-            station = Station(
-                coordinates=Coordinates(
-                    lat=coordinates[1],
-                    lon=coordinates[0]
-                ),
-                sources=[
-                    Source(
-                        source=source['source'],
-                        inner_id=source['station_inner_id']
-                    ) for source in sources
-                ],
-                chargers=self._format_chargers(charger_rows=charger_rows),
-                events=events,
-                comments=self._format_comments(comment_rows=comments_rows),
-                geo=json.loads(row['geo']) if row['geo'] else None,
-                address=row['address'],
-                ocpi_ids=json.loads(row['ocpi_ids']) if row['ocpi_ids'] else None,
-                last_event=last_event if last_event else None,
-                average_rating=row['rating'] or average_rating
-            )
+        average_rating = calculate_average_rating(
+            [comments_row['rating'] for comments_row in comments_rows if comments_row['rating']]
+        )
 
-            return station
-        return None
+        events = self._format_events(event_rows=events_rows)
+        last_event = events[0] if events else None
+
+        station = Station(
+            coordinates=Coordinates(
+                lat=coordinates[1],
+                lon=coordinates[0]
+            ),
+            sources=[
+                Source(
+                    source=source['source'],
+                    inner_id=source['station_inner_id']
+                ) for source in sources
+            ],
+            chargers=self._format_chargers(charger_rows=charger_rows),
+            events=events,
+            comments=self._format_comments(comment_rows=comments_rows),
+            geo=json.loads(row['geo']) if row['geo'] else None,
+            address=row['address'],
+            ocpi_ids=json.loads(row['ocpi_ids']) if row['ocpi_ids'] else None,
+            last_event=last_event if last_event else None,
+            average_rating=row['rating'] or average_rating
+        )
+        return station
 
 
     async def add_stations(self, stations: list[AddStation]) -> None:

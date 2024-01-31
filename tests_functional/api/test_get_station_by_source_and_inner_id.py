@@ -14,7 +14,7 @@ async def test_get_station_by_source_and_inner_id(client: TestClient, pg: asyncp
 
     #act
     resp = client.get(
-        '/api/v1/stations-by-source-and-inner-id',
+        '/api/v1/stations',
         params={
             'station_source': 'plug_share',
             'station_inner_id': 1,

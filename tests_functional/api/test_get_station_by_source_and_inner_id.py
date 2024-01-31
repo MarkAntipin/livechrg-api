@@ -23,3 +23,17 @@ async def test_get_station_by_source_and_inner_id(client: TestClient, pg: asyncp
 
     # assert
     assert resp.status_code == 200
+
+    station = resp.json()
+
+    # basic fields
+    assert station['coordinates']['lat'] == 1.4
+    assert station['coordinates']['lon'] == 1.5
+    assert station['sources']
+    assert station['chargers']
+    assert station['events']
+    assert station['comments']
+
+    # custom metrics fields
+    assert station['average_rating'] == 5
+    assert station['last_event']['is_problem'] is False

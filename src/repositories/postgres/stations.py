@@ -81,10 +81,11 @@ class StationsRepository:
             GROUP BY s.id;
         """
         async with self.pool.acquire() as conn:
-            row = await conn.fetch(
+            rows = await conn.fetch(
                 query,
                 station_id
-            )[0]
+            )
+            row = rows[0]
         return row if row else None
 
 

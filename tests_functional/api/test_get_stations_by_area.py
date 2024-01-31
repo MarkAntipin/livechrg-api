@@ -16,7 +16,7 @@ async def test_get_stations_by_area(client: TestClient, pg: asyncpg.Pool) -> Non
 
     # act
     resp = client.get(
-        '/api/v1/stations',
+        '/api/v1/stations-by-area',
         params={
             'ne_lat': 2,
             'ne_lon': 2,
@@ -49,7 +49,7 @@ async def test_get_stations_by_area(client: TestClient, pg: asyncpg.Pool) -> Non
 async def test_get_stations_by_area__no_auth_token(client: TestClient, pg: asyncpg.Pool) -> None:
     # act
     resp = client.get(
-        '/api/v1/stations',
+        '/api/v1/stations-by-area',
         params={
             'ne_lat': 2,
             'ne_lon': 2,
@@ -65,7 +65,7 @@ async def test_get_stations_by_area__no_auth_token(client: TestClient, pg: async
 async def test_get_stations_by_area__invalid_auth_token(client: TestClient, pg: asyncpg.Pool) -> None:
     # act
     resp = client.get(
-        '/api/v1/stations',
+        '/api/v1/stations-by-area',
         params={
             'ne_lat': 2,
             'ne_lon': 2,

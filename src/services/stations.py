@@ -3,8 +3,7 @@ import json
 
 import asyncpg
 
-from src.api.routers.v1.models import AddStation, AreaRequest, Charger, Comment, Coordinates, Event,\
-    Source, Station
+from src.api.routers.v1.models import AddStation, AreaRequest, Charger, Comment, Coordinates, Event, Source, Station
 from src.repositories.postgres.chargers import ChargersRepository
 from src.repositories.postgres.comments import CommentsRepository
 from src.repositories.postgres.events import EventsRepository
@@ -133,7 +132,6 @@ class StationsServices:
 
         return stations
 
-
     async def get_by_source_and_inner_id(
             self,
             station_source: str,
@@ -192,7 +190,6 @@ class StationsServices:
             average_rating=row['rating'] or average_rating
         )
         return station
-
 
     async def add_stations(self, stations: list[AddStation]) -> None:
         for station in stations:

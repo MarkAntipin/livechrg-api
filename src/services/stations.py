@@ -3,7 +3,8 @@ import json
 
 import asyncpg
 
-from src.api.routers.v1.models import AddStation, AreaRequest, Charger, Comment, Coordinates, Event, Source, Station
+from src.api.routers.v1.models import AddStation, AreaRequest, Charger, Comment, Coordinates, Event,\
+    Source, Station
 from src.repositories.postgres.chargers import ChargersRepository
 from src.repositories.postgres.comments import CommentsRepository
 from src.repositories.postgres.events import EventsRepository

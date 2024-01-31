@@ -8,6 +8,9 @@ class TokensRepository:
         self.pool = pool
 
     async def does_token_exist(self, token: str) -> bool:
+        return await self._update_token_usage(token)
+        #TODO: remove
+
         try:
             await self._update_token_usage(token)
             return True
@@ -16,14 +19,22 @@ class TokensRepository:
 
     async def _update_token_usage(self, token: str) -> bool:
         query = """
-                    UPDATE tokens
+            UPDATE
+                tokens
+            SET
+                request_count = request_count + 1,
+                updated_at = now()
+            WHERE 
+                api_key = $1
+            RETURNING api_key;
+        """
+        async with self.pool.acquire() as connection:
+            rows = await connection.fetch(query, token)
+        is_updated = bool(rows)
+        return is_updated
 
-                    SET
-                    request_count = request_count + 1,
-                    updated_at = now()
+        #TODO: remove
 
-                    WHERE api_key = $1;
-                    """
         try:
             async with self.pool.acquire() as connection:
                 await connection.execute(query, token)
@@ -31,6 +42,7 @@ class TokensRepository:
         except asyncpg.PostgresError as e:
             raise e
 
+    # TODO: remove if not used
     async def add_new_token(self, new_token: str) -> None:
         query = """
                     INSERT

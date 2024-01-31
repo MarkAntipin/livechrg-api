@@ -1,17 +1,10 @@
 import asyncpg
 from fastapi.testclient import TestClient
 
-from tests_functional.helpers import add_charger, add_comment, add_event, add_source, add_station
+from tests_functional.helpers import add_charger, add_comment, add_event, add_source, add_station, add_token
 
 
-async def test_get_stations_by_area_without_token(client: TestClient, pg: asyncpg.Pool) -> None:
-    # arrange
-    station_id = await add_station(pg=pg, latitude=1.4, longitude=1.5, rating=5)
-    await add_source(pg=pg, station_id=station_id, station_inner_id=1, source='plug_share')
-    await add_comment(pg=pg, station_id=station_id, text='text', source='plug_share')
-    await add_event(pg=pg, station_id=station_id, source='plug_share', is_problem=False)
-    await add_charger(pg=pg, station_id=station_id, network='network')
-
+async def test_get_stations_by_area__without_token(client: TestClient, pg: asyncpg.Pool) -> None:
     # act
     resp = client.get(
         '/api/v1/stations',
@@ -27,7 +20,7 @@ async def test_get_stations_by_area_without_token(client: TestClient, pg: asyncp
     assert resp.status_code == 403
 
 
-async def test_get_stations_by_area_with_token(client: TestClient, pg: asyncpg.Pool) -> None:
+async def test_get_stations_by_area(client: TestClient, pg: asyncpg.Pool) -> None:
     # arrange
     station_id = await add_station(pg=pg, latitude=1.4, longitude=1.5, rating=5)
     await add_source(pg=pg, station_id=station_id, station_inner_id=1, source='plug_share')
@@ -35,11 +28,14 @@ async def test_get_stations_by_area_with_token(client: TestClient, pg: asyncpg.P
     await add_event(pg=pg, station_id=station_id, source='plug_share', is_problem=False)
     await add_charger(pg=pg, station_id=station_id, network='network')
 
+    api_key = '9d207bf0-10f5-4d8f-a479-22ff5aeff8d1'
+    await add_token(pg=pg, api_key=api_key)
+
     # act
     resp = client.get(
         '/api/v1/stations',
         headers={
-            'api-key': '9d207bf0-10f5-4d8f-a479-22ff5aeff8d1',
+            'api-key': api_key,
         },
         params={
             'ne_lat': 2,

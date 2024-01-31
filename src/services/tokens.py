@@ -9,12 +9,14 @@ class TokenServices:
     def __init__(self, pool: asyncpg.Pool) -> None:
         self._tokens_repo = TokensRepository(pool=pool)
 
+    # TODO: remove if not used
     async def add_new_token(self) -> str:
         new_token = str(uuid.uuid4())
         await self._tokens_repo.add_new_token(new_token)
         return new_token
 
     async def does_token_exist(self, token: str) -> bool:
+        # TODO: without uuid validation
         if await self._is_valid_uuid(token):
             return await self._tokens_repo.does_token_exist(token)
         return False

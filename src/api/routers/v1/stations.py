@@ -9,7 +9,7 @@ router = APIRouter(prefix='/api/v1', tags=['stations'])
 
 @router.get('/stations')
 async def get_stations_by_area(
-        api_key: str = Depends(check_api_key),
+        _: str = Depends(check_api_key),
         limit: int = Query(10),
         offset: int = Query(0),
         area: AreaRequest = Depends(),

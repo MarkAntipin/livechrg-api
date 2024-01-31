@@ -137,3 +137,19 @@ async def add_charger(
         json.dumps(ocpi_ids) if ocpi_ids else None,
         network
     )
+
+
+async def add_token(
+    pg: asyncpg.Pool,
+    api_key: str,
+) -> None:
+    await pg.execute(
+        """
+        INSERT INTO tokens (
+            api_key
+        )
+        VALUES
+            ($1)
+        """,
+        api_key
+    )

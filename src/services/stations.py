@@ -34,6 +34,51 @@ class StationsServices:
 
         return comment_rows_by_station_id, event_rows_by_station_id, charger_rows_by_station_id
 
+    async def _format_station(self, station_row: asyncpg.Record) -> Station:
+        station_id = station_row['id']
+
+        (
+            comment_rows_by_station_id,
+            event_rows_by_station_id,
+            charger_rows_by_station_id
+        ) = await self._get_station_extra_data(station_ids=[station_id])
+
+        charger_rows = charger_rows_by_station_id.get(station_id, [])
+        events_rows = event_rows_by_station_id.get(station_id, [])
+        comments_rows = comment_rows_by_station_id.get(station_id, [])
+
+        sources = json.loads(station_row['sources'])
+        coordinates = json.loads(station_row['coordinates'])
+
+        average_rating = calculate_average_rating(
+            [comments_row['rating'] for comments_row in comments_rows if comments_row['rating']]
+        )
+
+        events = self._format_events(event_rows=events_rows)
+        last_event = events[0] if events else None
+
+        station = Station(
+            coordinates=Coordinates(
+                lat=coordinates[1],
+                lon=coordinates[0]
+            ),
+            sources=[
+                Source(
+                    source=source['source'],
+                    inner_id=source['station_inner_id']
+                ) for source in sources
+            ],
+            chargers=self._format_chargers(charger_rows=charger_rows),
+            events=events,
+            comments=self._format_comments(comment_rows=comments_rows),
+            geo=json.loads(station_row['geo']) if station_row['geo'] else None,
+            address=station_row['address'],
+            ocpi_ids=json.loads(station_row['ocpi_ids']) if station_row['ocpi_ids'] else None,
+            last_event=last_event if last_event else None,
+            average_rating=station_row['rating'] or average_rating
+        )
+        return station
+
     @staticmethod
     def _format_comments(comment_rows: list[asyncpg.Record]) -> list[Comment]:
         return [
@@ -149,15 +194,16 @@ class StationsServices:
         if not row:
             return
 
+        # return(self._format_station(station_row=row))
         (
-            comments_rows_by_station_id,
-            events_rows_by_station_id,
+            comment_rows_by_station_id,
+            event_rows_by_station_id,
             charger_rows_by_station_id
         ) = await self._get_station_extra_data(station_ids=[station_id])
 
         charger_rows = charger_rows_by_station_id.get(station_id, [])
-        events_rows = events_rows_by_station_id.get(station_id, [])
-        comments_rows = comments_rows_by_station_id.get(station_id, [])
+        events_rows = event_rows_by_station_id.get(station_id, [])
+        comments_rows = comment_rows_by_station_id.get(station_id, [])
 
         sources = json.loads(row['sources'])
         coordinates = json.loads(row['coordinates'])

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from fastapi.security import APIKeyHeader
 
 from src.api.depends import get_stations_service
-from src.api.routers.v1.models import AddStationsRequest, AreaRequest, GetStationsByAreaResponse, SourceName, Station
+from src.api.routers.v1.models import AddStationsRequest, AreaRequest, GetStationsByAreaResponse, Station
 from src.api.security import get_authorization_header
 from src.services.stations import StationsServices
 

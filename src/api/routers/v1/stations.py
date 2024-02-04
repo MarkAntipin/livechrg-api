@@ -29,7 +29,7 @@ async def get_stations_by_area(
 
 @router.get('/stations')
 async def get_station_by_source_and_inner_id(
-        station_source: SourceName,
+        station_source: str,
         station_inner_id: int,
         stations_service: StationsServices = Depends(get_stations_service),
         _: APIKeyHeader = Depends(get_authorization_header)

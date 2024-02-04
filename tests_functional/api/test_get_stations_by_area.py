@@ -79,3 +79,23 @@ async def test_get_stations_by_area__invalid_auth_token(client: TestClient, pg: 
 
     # assert
     assert resp.status_code == 403
+
+
+async def test_get_stations_by_area__validation_for_limit(client: TestClient, pg: asyncpg.Pool) -> None:
+    # act
+    resp = client.get(
+        '/api/v1/stations-by-area',
+        params={
+            'limit': 11,
+            'ne_lat': 2,
+            'ne_lon': 2,
+            'sw_lat': 1,
+            'sw_lon': 1,
+        },
+        headers={
+            'Authorization': os.environ['ADMIN_AUTH_TOKEN']
+        }
+    )
+
+    # assert
+    assert resp.status_code == 422

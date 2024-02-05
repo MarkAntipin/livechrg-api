@@ -1,13 +1,41 @@
 import asyncpg
 from fastapi.testclient import TestClient
 
-from tests_functional.helpers import add_charger, add_comment, add_event, add_source, add_station, add_token
+from tests_functional.helpers import (
+    add_charger,
+    add_comment,
+    add_event,
+    add_source,
+    add_station,
+    add_token,
+)
 
 
-async def test_get_stations_by_area__without_token(client: TestClient, pg: asyncpg.Pool) -> None:
+async def test_get_stations_by_area__no_token(client: TestClient, pg: asyncpg.Pool) -> None:
     # act
     resp = client.get(
         '/api/v1/stations',
+        params={
+            'ne_lat': 2,
+            'ne_lon': 2,
+            'sw_lat': 1,
+            'sw_lon': 1,
+        }
+    )
+
+    # assert
+    assert resp.status_code == 401
+
+
+async def test_get_stations_by_area__invalid_token(client: TestClient, pg: asyncpg.Pool) -> None:
+    # arrange
+    api_key = "i_exploit"
+    # act
+    resp = client.get(
+        '/api/v1/stations',
+        headers={
+            'api-key': api_key,
+        },
         params={
             'ne_lat': 2,
             'ne_lon': 2,
@@ -28,7 +56,7 @@ async def test_get_stations_by_area(client: TestClient, pg: asyncpg.Pool) -> Non
     await add_event(pg=pg, station_id=station_id, source='plug_share', is_problem=False)
     await add_charger(pg=pg, station_id=station_id, network='network')
 
-    api_key = '9d207bf0-10f5-4d8f-a479-22ff5aeff8d1'
+    api_key = 'simple_key'
     await add_token(pg=pg, api_key=api_key)
 
     # act

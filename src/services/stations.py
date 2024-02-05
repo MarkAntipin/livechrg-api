@@ -3,6 +3,7 @@ import json
 
 import asyncpg
 
+from typing import List
 from src.api.routers.v1.models import AddStation, AreaRequest, Charger, Comment, Coordinates, Event, Source, Station
 from src.repositories.postgres.chargers import ChargersRepository
 from src.repositories.postgres.comments import CommentsRepository
@@ -59,14 +60,49 @@ class StationsServices:
         ]
 
     @staticmethod
-    def _format_chargers(charger_rows: list[asyncpg.Record]) -> list[Charger]:
-        return [
-            Charger(
-                network=charger['network'],
-                ocpi_ids=json.loads(charger['ocpi_ids']) if charger['ocpi_ids'] else None
-            )
-            for charger in charger_rows
-        ]
+    def _format_chargers(charger_rows: List[dict]) -> List[Charger]:
+        """
+        Process a list of charger data and return a list of unique Charger objects.
+
+        This function parses charger data, where each charger includes a network and possibly multiple OCPI IDs.
+        It ensures that each charger, uniquely identified by a combination of network and individual OCPI ID,
+        is represented by a single Charger object.
+        Chargers with multiple OCPI IDs are treated as separate chargers under the same network.
+
+        Args:
+            charger_rows (List[dict]): A list of dictionaries, each representing charger data with 'network' and 'ocpi_ids' keys.
+            'network' is a string indicating the charger's network, and
+            'ocpi_ids' is a JSON string representing one or more OCPI IDs.
+
+        Returns:
+            List[Charger]: A list of unique Charger objects.
+            Chargers with multiple OCPI IDs are split into multiple Charger objects, each with a single OCPI ID.
+            If 'ocpi_ids' is empty or not provided, it is set to None in the resulting Charger object.
+
+        Unique chargers are determined by their network and individual OCPI IDs.
+        Duplicate chargers (same network and OCPI ID) are not included in the returned list.
+        """
+        unique_chargers = set()
+        formatted_chargers = []
+        for charger in charger_rows:
+            network = charger['network']
+            ocpi_ids = json.loads(charger.get('ocpi_ids', 'null')) if charger.get('ocpi_ids') else None
+
+            if ocpi_ids and isinstance(ocpi_ids, list):
+                # Split chargers with multiple ocpi_ids into separate chargers
+                for ocpi_id in ocpi_ids:
+                    charger_tuple = (network, ocpi_id)
+                    if charger_tuple not in unique_chargers:
+                        unique_chargers.add(charger_tuple)
+                        formatted_chargers.append(Charger(network=network, ocpi_ids=[ocpi_id]))
+            else:
+                # Handle single ocpi_id, None, or empty list
+                charger_tuple = (network, tuple(ocpi_ids) if isinstance(ocpi_ids, list) else ocpi_ids)
+                if charger_tuple not in unique_chargers:
+                    unique_chargers.add(charger_tuple)
+                    formatted_chargers.append(Charger(network=network, ocpi_ids=ocpi_ids if ocpi_ids else None))
+
+        return formatted_chargers
 
     async def get_by_area(
             self,
@@ -271,3 +307,5 @@ class StationsServices:
                         ocpi_ids=charger.ocpi_ids
                         )
                     )
+
+

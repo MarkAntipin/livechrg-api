@@ -84,8 +84,7 @@ class StationsRepository:
                 query,
                 station_id
             )
-            row = rows[0]
-        return row if row else None
+        return rows[0] if rows else None
 
     async def get_by_source_and_inner_id(
             self,
@@ -119,8 +118,7 @@ class StationsRepository:
                 station_source,
                 station_inner_id
             )
-            row = rows[0]
-        return row if row else None
+        return rows[0] if rows else None
 
     async def get_station_id_by_source(self, source: str, inner_id: int) -> int | None:
         query = """

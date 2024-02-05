@@ -140,14 +140,10 @@ class StationsServices:
             station_source: str,
             station_inner_id: int
     ) -> Station | None:
-        station_id = await self.stations_repo.get_station_id_by_source(
-            source=station_source, inner_id=station_inner_id
+        row = await self.stations_repo.get_by_source_and_inner_id(
+            station_inner_id=station_inner_id,
+            station_source=station_source
         )
-
-        if not station_id:
-            return
-
-        row = await self.stations_repo.get_by_id(station_id=station_id)
 
         if not row:
             return

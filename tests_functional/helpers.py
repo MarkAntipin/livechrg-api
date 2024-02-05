@@ -5,13 +5,13 @@ import asyncpg
 
 
 async def add_station(
-    pg: asyncpg.Pool,
-    latitude: float,
-    longitude: float,
-    geo: dict = None,
-    address: str = 'address',
-    ocpi_ids: dict = None,
-    rating: float = 10,
+        pg: asyncpg.Pool,
+        latitude: float,
+        longitude: float,
+        geo: dict = None,
+        address: str = 'address',
+        ocpi_ids: dict = None,
+        rating: float = 10,
 ) -> int:
     row = await pg.fetchrow(
         """
@@ -38,10 +38,10 @@ async def add_station(
 
 
 async def add_source(
-    pg: asyncpg.Pool,
-    station_id: int,
-    station_inner_id: int,
-    source: str
+        pg: asyncpg.Pool,
+        station_id: int,
+        station_inner_id: int,
+        source: str
 ) -> None:
     await pg.execute(
         """
@@ -60,12 +60,12 @@ async def add_source(
 
 
 async def add_comment(
-    pg: asyncpg.Pool,
-    station_id: int,
-    text: str,
-    source: str,
-    user_name: str | None = None,
-    rating: int = None,
+        pg: asyncpg.Pool,
+        station_id: int,
+        text: str,
+        source: str,
+        user_name: str | None = None,
+        rating: int = None,
 ) -> None:
     await pg.execute(
         """
@@ -90,12 +90,12 @@ async def add_comment(
 
 
 async def add_event(
-    pg: asyncpg.Pool,
-    station_id: int,
-    source: str,
-    is_problem: bool,
-    charged_at: datetime = datetime.now(UTC),
-    name: str | None = None
+        pg: asyncpg.Pool,
+        station_id: int,
+        source: str,
+        is_problem: bool,
+        charged_at: datetime = datetime.now(UTC),
+        name: str | None = None
 ) -> None:
     await pg.execute(
         """
@@ -118,10 +118,10 @@ async def add_event(
 
 
 async def add_charger(
-    pg: asyncpg.Pool,
-    station_id: int,
-    ocpi_ids: dict | None = None,
-    network: str | None = None
+        pg: asyncpg.Pool,
+        station_id: int,
+        ocpi_ids: dict | None = None,
+        network: str | None = None
 ) -> None:
     await pg.execute(
         """
@@ -140,8 +140,8 @@ async def add_charger(
 
 
 async def add_token(
-    pg: asyncpg.Pool,
-    api_key: str,
+        pg: asyncpg.Pool,
+        api_key: str,
 ) -> None:
     await pg.execute(
         """
@@ -153,3 +153,24 @@ async def add_token(
         """,
         api_key
     )
+
+
+async def get_token_stats(
+        pg: asyncpg.Pool,
+        api_key: str,
+) -> int:
+    query = """
+        SELECT
+            request_count
+        FROM
+            tokens
+        WHERE
+            api_key = $1
+        """
+    async with pg.acquire() as conn:
+        row = await conn.fetch(
+            query,
+            api_key,
+        )
+    return int(row[0]['request_count'])
+

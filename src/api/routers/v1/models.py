@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import StrEnum, auto
 
 from pydantic import BaseModel
 
@@ -33,6 +34,11 @@ class Comment(BaseModel):
     created_at: datetime
     source: str
     user_name: str | None = None
+
+
+class SourceName(StrEnum):
+    charge_point = auto()
+    plug_share = auto()
 
 
 class Source(BaseModel):

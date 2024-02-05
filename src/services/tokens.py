@@ -1,4 +1,3 @@
-
 import asyncpg
 
 from src.repositories.postgres.tokens import TokensRepository
@@ -9,4 +8,4 @@ class TokenServices:
         self._tokens_repo = TokensRepository(pool=pool)
 
     async def does_token_exist(self, token: str) -> bool:
-        return await self._tokens_repo.does_token_exist(token)
+        return await self._tokens_repo.does_token_exist(str(token))

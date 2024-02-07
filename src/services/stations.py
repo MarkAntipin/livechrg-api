@@ -35,7 +35,7 @@ class StationsServices:
 
         return comment_rows_by_station_id, event_rows_by_station_id, charger_rows_by_station_id
 
-    async def _format_station(
+    def _format_station(
             self,
             station_row: asyncpg.Record,
             charger_rows: list,
@@ -136,7 +136,7 @@ class StationsServices:
             charger_rows = charger_rows_by_station_id.get(station_id, [])
             events_rows = event_rows_by_station_id.get(station_id, [])
             comments_rows = comment_rows_by_station_id.get(station_id, [])
-            station = await self._format_station(
+            station = self._format_station(
                 station_row=row,
                 charger_rows=charger_rows,
                 events_rows=events_rows,
@@ -170,7 +170,7 @@ class StationsServices:
         events_rows = event_rows_by_station_id.get(station_id, [])
         comments_rows = comment_rows_by_station_id.get(station_id, [])
 
-        return await self._format_station(
+        return self._format_station(
             station_row=row,
             charger_rows=charger_rows,
             events_rows=events_rows,

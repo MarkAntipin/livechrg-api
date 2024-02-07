@@ -49,13 +49,13 @@ class StationsServices:
             station_row: asyncpg.Record,
             charger_rows: list,
             events_rows: list,
-            comments_rows: list
+            comment_rows: list
     ) -> Station:
         sources = json.loads(station_row['sources'])
         coordinates = json.loads(station_row['coordinates'])
 
         average_rating = calculate_average_rating(
-            [comments_row['rating'] for comments_row in comments_rows if comments_row['rating']]
+            [comment_row['rating'] for comment_row in comment_rows if comment_row['rating']]
         )
 
         events = self._format_events(event_rows=events_rows)
@@ -74,7 +74,7 @@ class StationsServices:
             ],
             chargers=self._format_chargers(charger_rows=charger_rows),
             events=events,
-            comments=self._format_comments(comment_rows=comments_rows),
+            comments=self._format_comments(comment_rows=comment_rows),
             geo=json.loads(station_row['geo']) if station_row['geo'] else None,
             address=station_row['address'],
             ocpi_ids=json.loads(station_row['ocpi_ids']) if station_row['ocpi_ids'] else None,
@@ -144,12 +144,12 @@ class StationsServices:
             station_id = row['id']
             charger_rows = charger_rows_by_station_id.get(station_id, [])
             events_rows = event_rows_by_station_id.get(station_id, [])
-            comments_rows = comment_rows_by_station_id.get(station_id, [])
+            comment_rows = comment_rows_by_station_id.get(station_id, [])
             station = self._format_station(
                 station_row=row,
                 charger_rows=charger_rows,
                 events_rows=events_rows,
-                comments_rows=comments_rows
+                comment_rows=comment_rows
             )
             stations.append(station)
 
@@ -177,13 +177,13 @@ class StationsServices:
 
         charger_rows = charger_rows_by_station_id.get(station_id, [])
         events_rows = event_rows_by_station_id.get(station_id, [])
-        comments_rows = comment_rows_by_station_id.get(station_id, [])
+        comment_rows = comment_rows_by_station_id.get(station_id, [])
 
         return self._format_station(
             station_row=row,
             charger_rows=charger_rows,
             events_rows=events_rows,
-            comments_rows=comments_rows
+            comment_rows=comment_rows
         )
 
     async def add_stations(self, stations: list[AddStation]) -> None:

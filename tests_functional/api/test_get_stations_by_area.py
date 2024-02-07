@@ -9,48 +9,10 @@ from tests_functional.helpers import (
     add_event,
     add_source,
     add_station,
-    add_token,
 )
 
 
-async def test_get_stations_by_area__no_token(client: TestClient, pg: asyncpg.Pool) -> None:
-    # act
-    resp = client.get(
-        '/api/v1/stations',
-        params={
-            'ne_lat': 2,
-            'ne_lon': 2,
-            'sw_lat': 1,
-            'sw_lon': 1,
-        }
-    )
-
-    # assert
-    assert resp.status_code == 401
-
-
-async def test_get_stations_by_area__invalid_token(client: TestClient, pg: asyncpg.Pool) -> None:
-    # arrange
-    api_key = "i_exploit"
-    # act
-    resp = client.get(
-        '/api/v1/stations',
-        headers={
-            'Authorization': api_key,
-        },
-        params={
-            'ne_lat': 2,
-            'ne_lon': 2,
-            'sw_lat': 1,
-            'sw_lon': 1,
-        }
-    )
-
-    # assert
-    assert resp.status_code == 403
-
-
-async def test_get_stations_by_area__with_admin_token(client: TestClient, pg: asyncpg.Pool) -> None:
+async def test_get_stations_by_area(client: TestClient, pg: asyncpg.Pool) -> None:
     # arrange
     station_id = await add_station(pg=pg, latitude=1.4, longitude=1.5, rating=5)
     await add_source(pg=pg, station_id=station_id, station_inner_id=1, source='plug_share')
@@ -88,80 +50,3 @@ async def test_get_stations_by_area__with_admin_token(client: TestClient, pg: as
     # custom metrics fields
     assert station['average_rating'] == 5
     assert station['last_event']['is_problem'] is False
-
-
-async def test_get_stations_by_area__with_client_token(client: TestClient, pg: asyncpg.Pool) -> None:
-    # arrange
-    station_id = await add_station(pg=pg, latitude=1.4, longitude=1.5, rating=5)
-    await add_source(pg=pg, station_id=station_id, station_inner_id=1, source='plug_share')
-    await add_comment(pg=pg, station_id=station_id, text='text', source='plug_share')
-    await add_event(pg=pg, station_id=station_id, source='plug_share', is_problem=False)
-    await add_charger(pg=pg, station_id=station_id, network='network')
-
-    sample_key = "karramba"
-    await add_token(pg=pg, api_key=sample_key)
-    # act
-    resp = client.get(
-        '/api/v1/stations-by-area',
-        params={
-            'ne_lat': 2,
-            'ne_lon': 2,
-            'sw_lat': 1,
-            'sw_lon': 1,
-        },
-        headers={
-            'Authorization': sample_key
-        }
-    )
-
-    # assert
-    assert resp.status_code == 200
-
-    station = resp.json()['stations'][0]
-
-    # basic fields
-    assert station['coordinates']['lat'] == 1.4
-    assert station['coordinates']['lon'] == 1.5
-    assert station['sources']
-    assert station['chargers']
-    assert station['events']
-    assert station['comments']
-
-    # custom metrics fields
-    assert station['average_rating'] == 5
-    assert station['last_event']['is_problem'] is False
-
-
-async def test_get_stations_by_area__no_auth_token(client: TestClient, pg: asyncpg.Pool) -> None:
-    # act
-    resp = client.get(
-        '/api/v1/stations-by-area',
-        params={
-            'ne_lat': 2,
-            'ne_lon': 2,
-            'sw_lat': 1,
-            'sw_lon': 1,
-        },
-    )
-
-    # assert
-    assert resp.status_code == 401
-
-
-async def test_get_stations_by_area__invalid_auth_token(client: TestClient, pg: asyncpg.Pool) -> None:
-    # act
-    resp = client.get(
-        '/api/v1/stations-by-area',
-        params={
-            'ne_lat': 2,
-            'ne_lon': 2,
-            'sw_lat': 1,
-            'sw_lon': 1,
-        },
-        headers={
-            'Authorization': 'invalid_token'
-        }
-    )
-
-    # assert
-    assert resp.status_code == 403

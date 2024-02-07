@@ -158,7 +158,7 @@ async def add_token(
 async def get_token_stats(
         pg: asyncpg.Pool,
         api_key: str,
-) -> int:
+) -> int | None:
     query = """
         SELECT
             request_count
@@ -172,5 +172,5 @@ async def get_token_stats(
             query,
             api_key,
         )
-    return int(row[0]['request_count'])
+    return int(row[0]['request_count']) if row else None
 

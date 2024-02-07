@@ -5,7 +5,7 @@ class TokensRepository:
     def __init__(self, pool: asyncpg.Pool) -> None:
         self.pool = pool
 
-    async def does_token_exist(self, token: str) -> bool:
+    async def is_existing_token(self, token: str) -> bool:
         return await self._update_token_usage(token)
 
     async def _update_token_usage(self, token: str) -> bool:

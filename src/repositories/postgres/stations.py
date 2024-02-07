@@ -2,6 +2,8 @@ import json
 
 import asyncpg
 
+from src.api.routers.v1.models import SourceName
+
 
 class StationsRepository:
     def __init__(self, pool: asyncpg.Pool) -> None:
@@ -88,7 +90,7 @@ class StationsRepository:
 
     async def get_by_source_and_inner_id(
             self,
-            station_source: str,
+            station_source: SourceName,
             station_inner_id: int
     ) -> asyncpg.Record | None:
         query = """

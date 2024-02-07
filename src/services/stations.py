@@ -3,7 +3,8 @@ import json
 
 import asyncpg
 
-from src.api.routers.v1.models import AddStation, AreaRequest, Charger, Comment, Coordinates, Event, Source, Station
+from src.api.routers.v1.models import AddStation, AreaRequest, Charger, Comment, Coordinates, Event, Source, Station, \
+    SourceName
 from src.repositories.postgres.chargers import ChargersRepository
 from src.repositories.postgres.comments import CommentsRepository
 from src.repositories.postgres.events import EventsRepository
@@ -147,7 +148,7 @@ class StationsServices:
 
     async def get_by_source_and_inner_id(
             self,
-            station_source: str,
+            station_source: SourceName,
             station_inner_id: int
     ) -> Station | None:
         row = await self.stations_repo.get_by_source_and_inner_id(

@@ -3,6 +3,7 @@ import os
 import asyncpg
 from fastapi.testclient import TestClient
 
+from src.api.routers.v1.models import SourceName
 from tests_functional.helpers import add_charger, add_comment, add_event, add_source, add_station
 
 
@@ -18,7 +19,7 @@ async def test_get_station_by_source_and_inner_id(client: TestClient, pg: asyncp
     resp = client.get(
         '/api/v1/stations',
         params={
-            'station_source': 'plug_share',
+            'station_source': SourceName.plug_share.value,
             'station_inner_id': 1,
         },
         headers={

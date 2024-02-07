@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from fastapi.security import APIKeyHeader
 
 from src.api.depends import get_stations_service
-from src.api.routers.v1.models import AddStationsRequest, AreaRequest, GetStationsByAreaResponse, Station
+from src.api.routers.v1.models import AddStationsRequest, AreaRequest, GetStationsByAreaResponse, Station, SourceName
 from src.api.security import get_authorization_header
 from src.services.stations import StationsServices
 
@@ -29,7 +29,7 @@ async def get_stations_by_area(
 
 @router.get('/stations')
 async def get_station_by_source_and_inner_id(
-        station_source: str,
+        station_source: SourceName,
         station_inner_id: int,
         stations_service: StationsServices = Depends(get_stations_service),
         _: APIKeyHeader = Depends(get_authorization_header)

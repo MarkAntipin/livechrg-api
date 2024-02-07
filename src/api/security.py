@@ -23,7 +23,7 @@ async def check_authorization_header(
     if secrets.compare_digest(authorization, request.app.state.admin_auth_token):
         return authorization
 
-    if await token_service.does_token_exist(authorization):
+    if await token_service.is_existing_token(authorization):
         return authorization
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN, detail='Invalid authorization header'

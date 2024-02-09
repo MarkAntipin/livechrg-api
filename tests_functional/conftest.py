@@ -20,7 +20,6 @@ async def pg_fixture() -> asyncpg.Pool:
         await pool.execute('DELETE FROM sources;')
         await pool.execute('DELETE FROM events;')
         await pool.execute('DELETE FROM chargers;')
-        await pool.execute('DELETE FROM tokens;')
 
     await teardown()
 
@@ -45,4 +44,3 @@ def env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv('PG_USER', test_settings.PG_USER)
     monkeypatch.setenv('PG_PASSWORD', test_settings.PG_PASSWORD)
     monkeypatch.setenv('PG_DATABASE', test_settings.PG_DATABASE)
-

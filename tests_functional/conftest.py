@@ -20,6 +20,7 @@ async def pg_fixture() -> asyncpg.Pool:
         await pool.execute('DELETE FROM sources;')
         await pool.execute('DELETE FROM events;')
         await pool.execute('DELETE FROM chargers;')
+        await pool.execute('DELETE FROM tokens;')
 
     await teardown()
 

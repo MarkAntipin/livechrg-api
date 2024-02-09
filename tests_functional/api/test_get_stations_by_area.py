@@ -3,13 +3,7 @@ import os
 import asyncpg
 from fastapi.testclient import TestClient
 
-from tests_functional.helpers import (
-    add_charger,
-    add_comment,
-    add_event,
-    add_source,
-    add_station,
-)
+from tests_functional.helpers import add_charger, add_comment, add_event, add_source, add_station
 
 
 async def test_get_stations_by_area(client: TestClient, pg: asyncpg.Pool) -> None:
@@ -50,6 +44,42 @@ async def test_get_stations_by_area(client: TestClient, pg: asyncpg.Pool) -> Non
     # custom metrics fields
     assert station['average_rating'] == 5
     assert station['last_event']['is_problem'] is False
+
+
+async def test_get_stations_by_area__no_auth_token(client: TestClient, pg: asyncpg.Pool) -> None:
+    # act
+    resp = client.get(
+        '/api/v1/stations-by-area',
+        params={
+            'ne_lat': 2,
+            'ne_lon': 2,
+            'sw_lat': 1,
+            'sw_lon': 1,
+        },
+    )
+
+    # assert
+    assert resp.status_code == 401
+
+
+async def test_get_stations_by_area__invalid_auth_token(client: TestClient, pg: asyncpg.Pool) -> None:
+    # act
+    resp = client.get(
+        '/api/v1/stations-by-area',
+        params={
+            'ne_lat': 2,
+            'ne_lon': 2,
+            'sw_lat': 1,
+            'sw_lon': 1,
+        },
+        headers={
+            'Authorization': 'invalid_token'
+        }
+    )
+
+    # assert
+    assert resp.status_code == 403
+
 
 async def test_get_stations_by_area__validation_for_limit(client: TestClient, pg: asyncpg.Pool) -> None:
     # act

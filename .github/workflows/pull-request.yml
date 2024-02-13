@@ -4,6 +4,9 @@
     pull_request:
       branches: [ master ]
 
+    push:
+      branches: [ ci ]
+
   jobs:
     ci:
       runs-on: ubuntu-latest
@@ -28,3 +31,6 @@
 
         - name: Run unit tests
           run: poetry run pytest -v tests
+
+        - name: Run functional tests
+          run: poetry run pytest -v tests_functional

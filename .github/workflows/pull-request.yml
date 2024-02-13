@@ -32,5 +32,8 @@
         - name: Run unit tests
           run: poetry run pytest -v tests
 
+        - name: Run app
+          run: python run.py
+
         - name: Run functional tests
           run: poetry run pytest -v tests_functional

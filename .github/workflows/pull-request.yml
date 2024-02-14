@@ -48,7 +48,10 @@
           run: poetry run pytest -v tests
 
         - name: Download golang-migrate
-          run: curl -L https://github.com/golang-migrate/migrate/releases/download/$version/migrate.$os-$arch.tar.gz | tar xvz
+          run: curl -L https://packagecloud.io/golang-migrate/migrate/gpgkey | apt-key add -
+            echo "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/migrate.list
+            apt-get update
+            apt-get install -y migrate
 
         - name: Apply migrations
           run: migrate -path ./migrations -database "postgres://livechrg-api:livechrg-api@localhost:5437/livechrg-api?sslmode=disable" up

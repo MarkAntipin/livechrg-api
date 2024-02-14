@@ -1,9 +1,6 @@
 import pytest
-from src.utils.filter_entities import (
-    Charger,
-    _is_chargers_equal
-)
 
+from src.utils.filter_entities import Charger, _is_chargers_equal
 
 # Sample chargers for testing
 charger1 = Charger(network="Network1", ocpi_ids=["ocpi1", "ocpi2"])
@@ -30,5 +27,5 @@ charger6 = Charger(network="Network1", ocpi_ids=None)
     # Different network, existing charger ocpi_ids=None
     (charger4, charger3, False)
 ])
-def test_is_chargers_equal(test_charger1, test_charger2, expected_result):
+def test_is_chargers_equal(test_charger1: Charger, test_charger2: Charger, expected_result: bool) -> None:
     assert _is_chargers_equal(test_charger1, test_charger2) == expected_result

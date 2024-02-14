@@ -19,7 +19,7 @@
             POSTGRES_PASSWORD: livechrg-api
             POSTGRES_DB: livechrg-api
           ports:
-            5437:5432
+            - 5437:5432
           options:
             --health-cmd pg_isready
             --health-interval 10s

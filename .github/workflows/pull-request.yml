@@ -32,11 +32,5 @@
         - name: Run unit tests
           run: poetry run pytest -v tests
 
-        - name: Apply migrations
-          run: migrate -path ./migrations -database "postgres://livechrg-api:livechrg-api@localhost:5437/livechrg-api?sslmode=disable" up
-
-        - name: Run app
-          run: python run.py
-
         - name: Run functional tests
           run: poetry run pytest -v tests_functional

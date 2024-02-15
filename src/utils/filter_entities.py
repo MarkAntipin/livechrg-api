@@ -26,10 +26,15 @@ def _is_comments_equal(comment_1: Comment | AddComment, comment_2: Comment | Add
 
 
 def _is_chargers_equal(charger_1: Charger, charger_2: Charger) -> bool:
+    # Directly address the scenario where both chargers have no ocpi_ids
+    if charger_1.ocpi_ids is None and charger_2.ocpi_ids is None:
+        return charger_1.network == charger_2.network
+    # Proceed with comparison if both have ocpi_ids
     return (
         charger_1.network == charger_2.network
+        and charger_1.ocpi_ids is not None
+        and charger_2.ocpi_ids is not None
         and sorted(charger_1.ocpi_ids) == sorted(charger_2.ocpi_ids)
-        if charger_1.ocpi_ids and charger_2.ocpi_ids else True
     )
 
 

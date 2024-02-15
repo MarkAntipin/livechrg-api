@@ -11,7 +11,7 @@ router = APIRouter(prefix='/api/v1', tags=['stations'])
 
 @router.get('/stations-by-area')
 async def get_stations_by_area(
-        limit: int = Query(10),
+        limit: int = Query(10, le=10),
         offset: int = Query(0),
         area: AreaRequest = Depends(),
         stations_service: StationsServices = Depends(get_stations_service),

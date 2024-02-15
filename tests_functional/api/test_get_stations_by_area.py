@@ -50,3 +50,23 @@ async def test_get_stations_by_area(client: TestClient, pg: asyncpg.Pool) -> Non
     # custom metrics fields
     assert station['average_rating'] == 5
     assert station['last_event']['is_problem'] is False
+
+
+async def test_get_stations_by_area__validation_for_limit(client: TestClient, pg: asyncpg.Pool) -> None:
+    # act
+    resp = client.get(
+        '/api/v1/stations-by-area',
+        params={
+            'limit': 11,
+            'ne_lat': 2,
+            'ne_lon': 2,
+            'sw_lat': 1,
+            'sw_lon': 1,
+        },
+        headers={
+            'Authorization': os.environ['ADMIN_AUTH_TOKEN']
+        }
+    )
+
+    # assert
+    assert resp.status_code == 422

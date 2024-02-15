@@ -2,6 +2,8 @@ import json
 
 import asyncpg
 
+from src.api.routers.v1.models import SourceName
+
 
 class StationsRepository:
     def __init__(self, pool: asyncpg.Pool) -> None:
@@ -58,7 +60,7 @@ class StationsRepository:
     async def get_by_id(
             self,
             station_id: int,
-    ) -> asyncpg.Record:
+    ) -> asyncpg.Record | None:
         query = """
             SELECT
                 s.id,
@@ -84,8 +86,41 @@ class StationsRepository:
                 query,
                 station_id
             )
-            row = rows[0]
-        return row if row else None
+        return rows[0] if rows else None
+
+    async def get_by_source_and_inner_id(
+            self,
+            station_source: SourceName,
+            station_inner_id: int
+    ) -> asyncpg.Record | None:
+        query = """
+            SELECT
+                s.id,
+                ST_AsGeoJson(coordinates)::jsonb -> 'coordinates' as coordinates,
+                s.geo,
+                s.address,
+                s.ocpi_ids,
+                s.rating,
+                json_agg(json_build_object(
+                    'station_inner_id', ss.station_inner_id,
+                    'source', ss.source
+                )) AS sources
+            FROM
+                stations s
+            JOIN
+                sources ss ON s.id = ss.station_id
+            WHERE
+                ss.source = $1 AND
+                ss.station_inner_id = $2
+            GROUP BY s.id;
+        """
+        async with self.pool.acquire() as conn:
+            rows = await conn.fetch(
+                query,
+                station_source,
+                station_inner_id
+            )
+        return rows[0] if rows else None
 
     async def get_station_id_by_source(self, source: str, inner_id: int) -> int | None:
         query = """

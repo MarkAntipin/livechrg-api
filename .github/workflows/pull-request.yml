@@ -32,7 +32,7 @@
 
         - name: Install PostGIS
           run: |
-             PG_VERSION=$(apt list --installed | grep -E 'postgresql-[0-9.]+' | sed -rn 's/.*postgresql-([0-9.]+).*/\1/p')
+            PG_VERSION=$(apt list --installed | grep -E 'postgresql-[0-9.]+' | sed -rn 's/.*postgresql-([0-9.]+).*/\1/p')
             [[ "$PG_VERSION" =~ ^[0-9.]+$ ]] || (echo "Failed to detect Postgres version" && exit 1)
             echo "Detected PostgreSQL version: $PG_VERSION"
             REPO_URL="https://apt.postgresql.org/pub/repos/apt/"

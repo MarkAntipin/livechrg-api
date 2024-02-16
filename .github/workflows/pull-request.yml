@@ -48,7 +48,7 @@
             which migrate
 
         - name: Apply migrations
-          run: migrate -path ./migrations -database "postgres://livechrg-api:livechrg-api@localhost:5437/livechrg-api?sslmode=disable" up
+          run: migrate -path ./migrations -database "postgres://postgres:postgres@localhost:5437/livechrg-api?sslmode=disable" up
           env:
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres

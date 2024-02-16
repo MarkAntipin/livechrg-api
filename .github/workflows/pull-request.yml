@@ -31,12 +31,13 @@
           uses: actions/checkout@v4
 
         - name: Add PostGIS
-          uses: huaxk/postgis-action@v1
+          uses: yurik/action-setup-postgis@v1
           with:
-            postgresql version: 'latest'
-            postgresql password: 'livechrg-api'
-            postgresql user: 'livechrg-api'
-            postgresql db: 'livechrg-api'
+            username: livechrg-api
+            password: livechrg-api
+            database: livechrg-api
+            port: 5437
+          id: pg
 
         - name: Install golang-migrate
           run: |

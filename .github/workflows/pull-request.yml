@@ -26,6 +26,15 @@
         - name: Install dependencies
           run: poetry install --no-interaction --no-root
 
+        - name: Install PostGIS
+          uses: nyurik/action-setup-postgis@v1
+          with:
+            username: livechrg-api
+            password: sw0rdfish
+            database: livechrg-api
+            port: 5437
+          id: pg
+
         - name: Run linter
           run: poetry run ruff check .
 
@@ -37,15 +46,6 @@
             curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz;
             sudo mv migrate /usr/bin/migrate;
             which migrate
-
-        - name: Install PostGIS
-          uses: nyurik/action-setup-postgis@v1
-          with:
-            username: livechrg-api
-            password: livechrg-api
-            database: livechrg-api
-            port: 5437
-          id: pg
 
         - name: Apply migrations
           run: migrate -path ./migrations -database "postgres://livechrg-api:livechrg-api@localhost:5437/livechrg-api?sslmode=disable" up

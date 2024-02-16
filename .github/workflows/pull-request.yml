@@ -49,7 +49,7 @@
           env:
             POSTGRES_USER: livechrg-api
             POSTGRES_PASSWORD: livechrg-api
-            POSTGRES_PORT: 5432
+            POSTGRES_PORT: 5437
             POSTGRES_DB: livechrg-api
 
         - name: Set up python

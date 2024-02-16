@@ -40,6 +40,7 @@
             echo "deb [signed-by=/usr/share/keyrings/postgresql.gpg] $REPO_URL $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
             sudo apt update
             sudo apt-get install postgresql-$PG_VERSION-postgis-3
+          shell: bash
 
         - name: Install golang-migrate
           run: |

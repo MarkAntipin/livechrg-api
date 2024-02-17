@@ -42,6 +42,10 @@
             sudo apt-get install postgresql-$PG_VERSION-postgis-3
           shell: bash
 
+        - name: Prerequisites
+          run: echo "$(pg_config --bindir)" >> $GITHUB_PATH
+          shell: bash
+
         - name: Install golang-migrate
           run: |
             curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz;

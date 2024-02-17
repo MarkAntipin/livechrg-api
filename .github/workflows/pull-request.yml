@@ -46,7 +46,31 @@
           run: echo "$(pg_config --bindir)" >> $GITHUB_PATH
           shell: bash
 
-        - name: Setup PostgreSQL
+        - name: Setup and start PostgreSQL
+          run: |
+            export PGDATA="$RUNNER_TEMP/pgdata"
+            pg_ctl init --options="--encoding=UTF-8 --locale=en_US.UTF-8"
+
+            # Forbid creating unix sockets since they are created by default in the
+            # directory we don't have permissions to.
+            echo "unix_socket_directories = ''" >> "$PGDATA/postgresql.conf"
+            echo "port = ${{ inputs.port }}" >> "$PGDATA/postgresql.conf"
+            pg_ctl start
+
+            # Both PGHOST and PGUSER are used by PostgreSQL tooling such as 'psql'
+            # or 'createuser'. Since PostgreSQL data has been re-setup, we cannot
+            # rely on defaults anymore.
+            #
+            # PGHOST is required for Linux and macOS since they default to unix
+            # sockets, and we have turned them off.
+            echo "PGHOST=localhost" >> $GITHUB_ENV
+            echo "PGUSER=livechrg-api" >> $GITHUB_ENV
+            echo "PGPORT=5437" >> $GITHUB_ENV
+            echo "PGDATABASE=livechrg-api" >> $GITHUB_ENV
+            echo "PGPASSWORD=livechrg-api" >> $GITHUB_ENV
+          shell: bash
+
+        - name: Add PostGIS to PostgreSQL database
           run: psql -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS postgis;"
           shell: bash
 

@@ -1,7 +1,10 @@
+from __future__ import annotations
+
+import typing
 from datetime import datetime
 from enum import StrEnum, auto
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, model_validator
 
 
 # get stations
@@ -11,10 +14,21 @@ class Coordinates(BaseModel):
 
 
 class AreaRequest(BaseModel):
-    ne_lat: float
-    ne_lon: float
-    sw_lat: float
-    sw_lon: float
+    ne_lat: float = Field(ge=-90, le=90)
+    ne_lon: float = Field(ge=-180, le=180)
+    sw_lat: float = Field(ge=-90, le=90)
+    sw_lon: float = Field(ge=-180, le=180)
+
+    @model_validator(mode='after')
+    def sw_is_lower_left_than_ne(self) -> typing.Type[AreaRequest]:
+        is_valid = bool(
+            self.sw_lat <= self.ne_lat and
+            self.sw_lon <= self.ne_lon
+        )
+
+        if not is_valid:
+            raise ValueError("SW corner must be lower left of the NE corner when requesting an area")
+        return self
 
 
 class Event(BaseModel):

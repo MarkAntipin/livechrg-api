@@ -1,6 +1,9 @@
 import asyncpg
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
+from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from pydantic import ValidationError
 
 from settings import AppSettings, PostgresSettings
 from src.api.routers.v1.stations import router as stations_router_v1
@@ -38,6 +41,13 @@ def create_app(settings: AppSettings) -> FastAPI:
     @app.on_event('shutdown')
     async def shutdown() -> None:
         await app.state.pool.close()
+
+    @app.exception_handler(ValidationError)
+    async def validation_exception_handler(request: Request, exc: ValidationError) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=jsonable_encoder({"detail": exc.errors()})
+        )
 
     app.include_router(stations_router_v1)
     return app

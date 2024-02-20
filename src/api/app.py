@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from settings import AppSettings, PostgresSettings
+from src.api.routers.inner.stations import router as inner_stations_router
 from src.api.routers.v1.stations import router as stations_router_v1
 
 
@@ -40,4 +41,5 @@ def create_app(settings: AppSettings) -> FastAPI:
         await app.state.pool.close()
 
     app.include_router(stations_router_v1)
+    app.include_router(inner_stations_router)
     return app

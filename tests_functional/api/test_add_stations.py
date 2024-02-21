@@ -3,15 +3,20 @@ import os
 from datetime import UTC, datetime, timedelta
 
 import asyncpg
+import pytest
 from fastapi.testclient import TestClient
 
 from tests_functional.helpers import add_event, add_source, add_station
 
 
-async def test_add_stations__station_does_not_exists(client: TestClient, pg: asyncpg.Pool) -> None:
+@pytest.mark.parametrize('url', [
+    "/api/v1/stations",
+    "/inner/api/stations",
+])
+async def test_add_stations__station_does_not_exists(client: TestClient, pg: asyncpg.Pool, url: str) -> None:
     # act
     resp = client.post(
-        '/api/v1/stations',
+        url,
         json={
             'stations': [
                 {
@@ -20,8 +25,8 @@ async def test_add_stations__station_does_not_exists(client: TestClient, pg: asy
                         'lon': 1.5,
                     },
                     'source': {
-                            'source': 'plug_share',
-                            'inner_id': 1,
+                        'source': 'plug_share',
+                        'inner_id': 1,
                     },
                     'comments': [
                         {
@@ -66,7 +71,13 @@ async def test_add_stations__station_does_not_exists(client: TestClient, pg: asy
     assert comment['text'] == 'text'
 
 
-async def test_add_stations__station_with_source_exists(client: TestClient, pg: asyncpg.Pool) -> None:
+@pytest.mark.parametrize('url', [
+    "/api/v1/stations",
+    "/inner/api/stations",
+])
+async def test_add_stations__station_with_source_exists(
+        client: TestClient, pg: asyncpg.Pool, url: str
+) -> None:
     # arrange
     source = 'plug_share'
     station_inner_id = 1
@@ -75,7 +86,7 @@ async def test_add_stations__station_with_source_exists(client: TestClient, pg: 
 
     # act
     resp = client.post(
-        '/api/v1/stations',
+        url,
         json={
             'stations': [
                 {
@@ -84,8 +95,8 @@ async def test_add_stations__station_with_source_exists(client: TestClient, pg: 
                         'lon': 1.5,
                     },
                     'source': {
-                            'source': source,
-                            'inner_id': station_inner_id,
+                        'source': source,
+                        'inner_id': station_inner_id,
                     },
                     'comments': [
                         {
@@ -129,14 +140,20 @@ async def test_add_stations__station_with_source_exists(client: TestClient, pg: 
     assert comment['text'] == 'text'
 
 
-async def test_add_stations__station_with_close_coordinates_exists(client: TestClient, pg: asyncpg.Pool) -> None:
+@pytest.mark.parametrize('url', [
+    "/api/v1/stations",
+    "/inner/api/stations",
+])
+async def test_add_stations__station_with_close_coordinates_exists(
+        client: TestClient, pg: asyncpg.Pool, url: str
+) -> None:
     # arrange
     station_id = await add_station(pg=pg, latitude=1.4, longitude=1.5)
     await add_source(pg=pg, station_id=station_id, station_inner_id=1, source='plug_share')
 
     # act
     resp = client.post(
-        '/api/v1/stations',
+        url,
         json={
             'stations': [
                 {
@@ -168,8 +185,12 @@ async def test_add_stations__station_with_close_coordinates_exists(client: TestC
     assert [s['source'] for s in sources] == ['plug_share', 'charge_point']
 
 
+@pytest.mark.parametrize('url', [
+    "/api/v1/stations",
+    "/inner/api/stations",
+])
 async def test_add_stations__station_with_source_exists__add_new_events(
-        client: TestClient, pg: asyncpg.Pool
+        client: TestClient, pg: asyncpg.Pool, url: str
 ) -> None:
     # arrange
     station_inner_id = 1
@@ -183,7 +204,7 @@ async def test_add_stations__station_with_source_exists__add_new_events(
 
     # act
     resp = client.post(
-        '/api/v1/stations',
+        url,
         json={
             'stations': [
                 {

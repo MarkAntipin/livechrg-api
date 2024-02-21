@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 from settings import AppSettings, PostgresSettings
+from src.api.routers.inner.stations import router as inner_stations_router
 from src.api.routers.v1.stations import router as stations_router_v1
 
 
@@ -50,4 +51,5 @@ def create_app(settings: AppSettings) -> FastAPI:
         )
 
     app.include_router(stations_router_v1)
+    app.include_router(inner_stations_router)
     return app

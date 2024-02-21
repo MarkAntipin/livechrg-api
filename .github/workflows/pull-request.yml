@@ -72,6 +72,7 @@
 
         - name: Add PostGIS to PostgreSQL database
           run: |
+            psql \du
             createuser -s livechrg-api
           shell: bash
 

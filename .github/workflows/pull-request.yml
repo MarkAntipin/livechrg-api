@@ -72,14 +72,7 @@
 
         - name: Add PostGIS to PostgreSQL database
           run: |
-            createuser ${{ inputs.rights }} ${{ inputs.username }}
-
-            if [ "${{ inputs.database }}" != "postgres" ]; then
-            createdb -O ${{ inputs.username }} ${{ inputs.database }}
-            fi
-
-            psql -v ON_ERROR_STOP=1 -c "ALTER USER ${{ inputs.username }} PASSWORD '${{ inputs.password }}';"
-            psql -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS postgis;" "${{ inputs.database }}
+            sudo -u postgres createuser livechrg
           shell: bash
 
         - name: Install golang-migrate

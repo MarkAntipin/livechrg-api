@@ -72,7 +72,7 @@
 
         - name: Add PostGIS to PostgreSQL database
           run: |
-            sudo -u postgres createuser livechrg
+            createuser -s livechrg
           shell: bash
 
         - name: Install golang-migrate

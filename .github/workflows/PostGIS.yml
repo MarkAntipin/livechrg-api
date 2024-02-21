@@ -1,0 +1,24 @@
+  name: PostGIS
+
+  on:
+    push:
+      branches: [ ci ]
+
+  jobs:
+    ci:
+      runs-on: ubuntu-latest
+
+      services:
+        postgres:
+          image: postgis/postgis:14-3.4
+          env:
+            POSTGRES_USER: livechrg-api
+            POSTGRES_PASSWORD: livechrg-api
+            POSTGRES_DB: livechrg-api
+          ports:
+            - 5437:5432
+          options:
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5

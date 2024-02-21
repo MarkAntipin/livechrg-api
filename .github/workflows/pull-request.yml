@@ -4,8 +4,8 @@
     pull_request:
       branches: [ master ]
 
-    push:
-      branches: [ ci ]
+#    push:
+#      branches: [ ci ]
 
   jobs:
     ci:

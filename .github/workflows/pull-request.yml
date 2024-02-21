@@ -72,8 +72,7 @@
 
         - name: Add PostGIS to PostgreSQL database
           run: |
-            create role livechrg-api with createdb login password 'livechrg';
-            createuser owning_user
+            createuser -s livechrg-api
           shell: bash
 
         - name: Install golang-migrate

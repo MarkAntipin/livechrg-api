@@ -72,7 +72,7 @@
 
         - name: Add PostGIS to PostgreSQL database
           run: |
-            sudo -u livechrg-api createuser livechrg-api
+            sudo -u localhost createuser livechrg-api
             createdb -O livechrg-api livechrg-api
             psql -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS postgis;"
           shell: bash

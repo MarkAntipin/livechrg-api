@@ -26,3 +26,17 @@
       steps:
         - name: Checkout
           uses: actions/checkout@v4
+
+        - name: Install golang-migrate
+          run: |
+            curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz
+            sudo mv migrate /usr/bin/migrate
+
+        - name: Apply migrations
+          run: migrate -path ./migrations -database "postgres://livechrg-api:livechrg-api@localhost:5437/livechrg-api?sslmode=disable" up
+          env:
+            PGUSER: livechrg-api
+            PGPASSWORD: livechrg-api
+            PGHOST: localhost
+            PGPORT: 5437
+            PGDATABASE: livechrg-api

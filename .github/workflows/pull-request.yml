@@ -51,6 +51,10 @@
             # sudo apt-get install postgis
           shell: bash
 
+        - name: Prerequisites
+          run: echo "$(pg_config --bindir)" >> $GITHUB_PATH
+          shell: bash
+
         - name: Initialize and start PostgreSQL
           run: sudo service postgresql start
 

@@ -64,10 +64,10 @@
             # PGHOST is required for Linux and macOS since they default to unix
             # sockets, and we have turned them off.
             echo "PGHOST=localhost" >> $GITHUB_ENV
-            echo "PGUSER=livechrg-api" >> $GITHUB_ENV
+            echo "PGUSER=postgres" >> $GITHUB_ENV
             echo "PGPORT=5437" >> $GITHUB_ENV
             echo "PGDATABASE=livechrg-api" >> $GITHUB_ENV
-            echo "PGPASSWORD=livechrg-api" >> $GITHUB_ENV
+            echo "PGPASSWORD=postgres" >> $GITHUB_ENV
           shell: bash
 
         - name: Add PostGIS to PostgreSQL database

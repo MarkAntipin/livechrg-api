@@ -72,7 +72,7 @@
 
         - name: Add PostGIS to PostgreSQL database
           run: |
-            psql -h localhost -U livechrg-api -d livechrg-api
+            sudo -u postgres createuser owning_user
           shell: bash
 
         - name: Install golang-migrate

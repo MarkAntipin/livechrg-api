@@ -11,20 +11,20 @@
     ci:
       runs-on: ubuntu-latest
 
-#      services:
-#        postgres:
-#          image: postgres
-#          env:
-#            POSTGRES_USER: livechrg-api
-#            POSTGRES_PASSWORD: livechrg-api
-#            POSTGRES_DB: livechrg-api
-#          ports:
-#            - 5437:5432
-#          options:
-#            --health-cmd pg_isready
-#            --health-interval 10s
-#            --health-timeout 5s
-#            --health-retries 5
+      services:
+        postgres:
+          image: postgres
+          env:
+            POSTGRES_USER: livechrg-api
+            POSTGRES_PASSWORD: livechrg-api
+            POSTGRES_DB: livechrg-api
+          ports:
+            - 5437:5432
+          options:
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
 
       steps:
         - name: Checkout

@@ -38,6 +38,14 @@
         - name: Initialize and start PostgreSQL
           run: sudo service postgresql start
 
+        - name: Set up PostgreSQL Environment Variables
+          run: |
+            echo "PGHOST=localhost" >> $GITHUB_ENV
+            echo "PGUSER=livechrg-api" >> $GITHUB_ENV
+            echo "PGPASSWORD=livechrg-api" >> $GITHUB_ENV
+            echo "PGPORT=5437" >> $GITHUB_ENV
+            echo "PGDATABASE=livechrg-api" >> $GITHUB_ENV
+
         - name: Install golang-migrate
           run: |
             curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz;

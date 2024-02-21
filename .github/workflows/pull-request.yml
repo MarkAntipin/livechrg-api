@@ -13,7 +13,7 @@
 
       services:
         postgres:
-          image: postgis/postgis:14-3.4
+          image: postgis/postgis:14-3.3-alpine
           env:
             POSTGRES_USER: livechrg-api
             POSTGRES_PASSWORD: livechrg-api

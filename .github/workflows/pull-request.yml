@@ -4,8 +4,8 @@
     pull_request:
       branches: [ master ]
 
-#    push:
-#      branches: [ ci ]
+    push:
+      branches: [ ci ]
 
   jobs:
     ci:
@@ -13,7 +13,7 @@
 
       services:
         postgres:
-          image: postgres
+          image: postgis/postgis:14-3.4
           env:
             POSTGRES_USER: livechrg-api
             POSTGRES_PASSWORD: livechrg-api
@@ -30,49 +30,10 @@
         - name: Checkout
           uses: actions/checkout@v4
 
-        - name: Install PostGIS
-          run: |
-            # Detect installed PostgreSQL version
-            PG_VERSION=$(apt list --installed | grep -E 'postgresql-[0-9.]+' | sed -rn 's/.*postgresql-([0-9.]+).*/\1/p')
-            [[ "$PG_VERSION" =~ ^[0-9.]+$ ]] || (echo "Failed to detect Postgres version" && exit 1)
-            echo "Detected PostgreSQL version: $PG_VERSION"
-            
-            # Install PostGIS
-            REPO_URL="https://apt.postgresql.org/pub/repos/apt/"
-            wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | sudo tee /usr/share/keyrings/postgresql.gpg >/dev/null
-            echo "deb [signed-by=/usr/share/keyrings/postgresql.gpg] $REPO_URL $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
-            sudo apt update
-            sudo apt-get install postgresql-$PG_VERSION-postgis-3
-            
-            # sudo apt install curl ca-certificates gnupg
-            # curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null
-            # sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-            # sudo apt update        
-            # sudo apt-get install postgis
-          shell: bash
-
-        - name: Prerequisites
-          run: echo "$(pg_config --bindir)" >> $GITHUB_PATH
-          shell: bash
-
-        - name: Initialize and start PostgreSQL
-          run: sudo service postgresql start
-
-        - name: Set up PostgreSQL Environment Variables
-          run: |
-            echo "PGHOST=localhost" >> $GITHUB_ENV
-            echo "PGUSER=livechrg-api" >> $GITHUB_ENV
-            echo "PGPASSWORD=livechrg-api" >> $GITHUB_ENV
-            echo "PGPORT=5437" >> $GITHUB_ENV
-            echo "PGDATABASE=livechrg-api" >> $GITHUB_ENV
-
         - name: Install golang-migrate
           run: |
             curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz
             sudo mv migrate /usr/bin/migrate
-
-        - name: Add PostGIS to Postgres
-          run: psql -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS postgis;" "livechrg-api"
 
         - name: Apply migrations
           run: migrate -path ./migrations -database "postgres://livechrg-api:livechrg-api@localhost:5437/livechrg-api?sslmode=disable" up

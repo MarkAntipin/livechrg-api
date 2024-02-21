@@ -51,6 +51,9 @@
             curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz
             sudo mv migrate /usr/bin/migrate
 
+        - name: Add PostGIS to Postgres
+          run: psql -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS postgis;" "livechrg-api"
+
         - name: Apply migrations
           run: migrate -path ./migrations -database "postgres://livechrg-api:livechrg-api@localhost:5437/livechrg-api?sslmode=disable" up
           env:

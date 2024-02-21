@@ -4,9 +4,6 @@
     pull_request:
       branches: [ master ]
 
-    push:
-      branches: [ ci ]
-
   jobs:
     ci:
       runs-on: ubuntu-latest

@@ -22,3 +22,7 @@
             --health-interval 10s
             --health-timeout 5s
             --health-retries 5
+
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4

@@ -35,7 +35,8 @@
             sudo apt-get update
             sudo apt-get install -y postgis
 
-        
+        - name: Initialize and start PostgreSQL
+          run: sudo service postgresql start
 
         - name: Install golang-migrate
           run: |

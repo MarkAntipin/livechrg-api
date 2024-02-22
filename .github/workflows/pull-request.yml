@@ -52,8 +52,14 @@
         - name: Install dependencies
           run: poetry install --no-interaction --no-root
 
-        - name: Run linter
+        - name: Run linter RUFF
           run: poetry run ruff check .
+
+        - name: Run linter MYPY for stations router
+          run: poetry run mypy src/api/routers/v1/stations.py --ignore-missing-imports
+
+        - name: Run linter PYRIGHT for stations router
+          run: poetry run pyright src/api/routers/v1/stations.py
 
         - name: Run unit tests
           run: poetry run pytest -v tests

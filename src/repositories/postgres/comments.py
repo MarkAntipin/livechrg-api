@@ -44,7 +44,7 @@ class CommentsRepository:
         source: str,
         created_at: datetime,
         user_name: str | None = None,
-        rating: int = None,
+        rating: int | None = None,
     ) -> None:
         async with self.pool.acquire() as conn:
             query = """

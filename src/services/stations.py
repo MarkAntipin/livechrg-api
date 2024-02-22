@@ -166,7 +166,7 @@ class StationsServices:
         )
 
         if not row:
-            return
+            return None
 
         station_id = row['id']
         (

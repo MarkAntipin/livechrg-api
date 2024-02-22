@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import typing
 from datetime import datetime
 from enum import StrEnum, auto
 
@@ -20,7 +19,7 @@ class AreaRequest(BaseModel):
     sw_lon: float = Field(ge=-180, le=180)
 
     @model_validator(mode='after')
-    def sw_is_lower_left_than_ne(self) -> typing.Type[AreaRequest]:
+    def sw_is_lower_left_than_ne(self) -> AreaRequest:
         is_valid = bool(
             self.sw_lat <= self.ne_lat and
             self.sw_lon <= self.ne_lon

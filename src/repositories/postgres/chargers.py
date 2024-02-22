@@ -35,7 +35,7 @@ class ChargersRepository:
     async def add_charger(
         self,
         station_id: int,
-        ocpi_ids: dict | None = None,
+        ocpi_ids: list[str] | None = None,
         network: str | None = None
     ) -> None:
         async with self.pool.acquire() as conn:

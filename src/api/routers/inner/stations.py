@@ -30,6 +30,6 @@ async def get_station_inner_id_and_source_by_station_id(
     station_sources = await stations_service.get_station_inner_id_and_source_by_station_id(
         station_ids=station_ids)
     if not station_sources:
-        raise HTTPException(status.HTTP_404_NOT_FOUND)
+        raise HTTPException(status.HTTP_404_NOT_FOUND)  # подумть надо, что если нет данных по одной станции из списка
 
     return station_sources

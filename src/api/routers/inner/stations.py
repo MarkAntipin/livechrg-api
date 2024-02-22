@@ -28,7 +28,7 @@ async def get_station_inner_id_and_source_by_station_id(
         _: APIKeyHeader = Depends(check_authorization_header)
 ) -> list[StationSources]:
     station_sources = await stations_service.get_station_inner_id_and_source_by_station_id(
-        station_ids=station_ids)
+        station_ids=station_ids)  # create get_station_inner_id_and_source_by_station_id()
     if not station_sources:
         raise HTTPException(status.HTTP_404_NOT_FOUND)  # подумть надо, что если нет данных по одной станции из списка
 

@@ -41,7 +41,7 @@ class EventsRepository:
         station_id: int,
         source: str,
         charged_at: datetime,
-        is_problem: bool,
+        is_problem: bool | None,
         name: str | None
     ) -> None:
         async with self.pool.acquire() as conn:

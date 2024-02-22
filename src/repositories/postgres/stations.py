@@ -187,7 +187,7 @@ class StationsRepository:
             self,
             lon: float,
             lat: float,
-            rating: int | None = None,
+            rating: float | None = None,
             geo: dict | None = None,
             address: str | None = None,
             ocpi_ids: list[str] | None = None

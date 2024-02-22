@@ -8,9 +8,38 @@
     ci:
       runs-on: ubuntu-latest
 
+      services:
+        postgres:
+          image: postgis/postgis:14-3.3-alpine
+          env:
+            POSTGRES_USER: livechrg-api
+            POSTGRES_PASSWORD: livechrg-api
+            POSTGRES_DB: livechrg-api
+          ports:
+            - 5437:5432
+          options:
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
+
       steps:
         - name: Checkout
           uses: actions/checkout@v4
+
+        - name: Install golang-migrate
+          run: |
+            curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz
+            sudo mv migrate /usr/bin/migrate
+
+        - name: Apply migrations
+          run: migrate -path ./migrations -database "postgres://livechrg-api:livechrg-api@localhost:5437/livechrg-api?sslmode=disable" up
+          env:
+            PGUSER: livechrg-api
+            PGPASSWORD: livechrg-api
+            PGHOST: localhost
+            PGPORT: 5437
+            PGDATABASE: livechrg-api
 
         - name: Set up python
           uses: actions/setup-python@v4
@@ -28,3 +57,6 @@
 
         - name: Run unit tests
           run: poetry run pytest -v tests
+
+        - name: Run functional tests
+          run: poetry run pytest -v tests_functional

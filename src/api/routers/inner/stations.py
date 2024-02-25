@@ -21,15 +21,12 @@ async def add_stations(
     return Response(status_code=status.HTTP_201_CREATED)
 
 
-@router.get('sources/', include_in_schema=False)
+@router.get('/sources', include_in_schema=False)
 async def get_station_inner_id_and_source_by_station_id(
         station_ids: List[int],
         stations_service: StationsServices = Depends(get_stations_service),
         _: APIKeyHeader = Depends(check_authorization_header)
 ) -> list[StationSources]:
     station_sources = await stations_service.get_station_inner_id_and_source_by_station_id(
-        station_ids=station_ids)  # create get_station_inner_id_and_source_by_station_id()
-    if not station_sources:
-        raise HTTPException(status.HTTP_404_NOT_FOUND)  # подумть надо, что если нет данных по одной станции из списка
-
+        station_ids=station_ids)
     return station_sources

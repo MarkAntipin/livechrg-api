@@ -51,4 +51,4 @@ class AddStationsRequest(BaseModel):
 
 class StationSources(BaseModel):
     station_id: int
-    sources: list[Source]
+    sources: list[Source] | None = None

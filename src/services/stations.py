@@ -3,6 +3,7 @@ import json
 
 import asyncpg
 
+from src.api.routers.inner.models import StationSources
 from src.api.routers.v1.models import (
     AddStation,
     AreaRequest,
@@ -266,3 +267,21 @@ class StationsServices:
                         ocpi_ids=charger.ocpi_ids
                         )
                     )
+
+    async def get_station_inner_id_and_source_by_station_id(
+            self,
+            station_ids: list[int],
+    ) -> list[StationSources]:
+        station_sources_tasks = [
+            self.stations_repo.get_inner_id_and_source_by_id(station_id=station_id)
+            for station_id in station_ids
+        ]
+        station_sources_results = await asyncio.gather(*station_sources_tasks)
+
+        return [
+            StationSources(
+                station_id=station_id,
+                sources=sources if sources is not None else []
+            )
+            for station_id, sources in zip(station_ids, station_sources_results, strict=False)
+        ]

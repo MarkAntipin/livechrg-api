@@ -2,6 +2,7 @@ import json
 
 import asyncpg
 
+from src.api.routers.inner.models import Source, StationSources
 from src.api.routers.v1.models import SourceName
 
 
@@ -222,7 +223,7 @@ class StationsRepository:
             )
         return row['id']
 
-    async def get_inner_id_and_source_by_id(self, station_id: int) -> StationSources:
+    async def get_inner_id_and_source_by_id(self, station_id: int) -> StationSources | None:
         query = """
             SELECT source, station_inner_id
             FROM sources

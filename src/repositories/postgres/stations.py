@@ -225,13 +225,16 @@ class StationsRepository:
 
     async def get_inner_id_and_source_by_id(self, station_id: int) -> list[Source] | None:
         query = """
-            SELECT source, station_inner_id
-            FROM sources
-            WHERE station_id = $1
-        """
+               SELECT source, station_inner_id
+               FROM sources
+               WHERE station_id = $1
+           """
         records = await self.pool.fetch(query, station_id)
         if not records:
             return None
 
-        return [Source(source=record['source'], inner_id=record['station_inner_id']) for record in records]
+        return [
+            Source(source=record["source"], inner_id=record["station_inner_id"])
+            for record in records
+        ]
 

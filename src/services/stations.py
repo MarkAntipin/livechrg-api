@@ -276,6 +276,12 @@ class StationsServices:
             self.stations_repo.get_inner_id_and_source_by_id(station_id=station_id)
             for station_id in station_ids
         ]
-        station_sources = await asyncio.gather(*station_sources_tasks)
+        station_sources_results = await asyncio.gather(*station_sources_tasks)
 
-        return station_sources
+        return [
+            StationSources(
+                station_id=station_id,
+                sources=sources if sources is not None else []
+            )
+            for station_id, sources in zip(station_ids, station_sources_results, strict=False)
+        ]

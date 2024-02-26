@@ -1,6 +1,4 @@
-from typing import List
-
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, Response, status
 from fastapi.security import APIKeyHeader
 
 from src.api.depends import get_stations_service
@@ -23,10 +21,11 @@ async def add_stations(
 
 @router.get('/sources', include_in_schema=False)
 async def get_station_inner_id_and_source_by_station_id(
-        station_ids: List[int],
+        station_ids: str,
         stations_service: StationsServices = Depends(get_stations_service),
         _: APIKeyHeader = Depends(check_authorization_header)
 ) -> list[StationSources]:
+    station_ids = [int(id_str) for id_str in station_ids.split(',')]
     station_sources = await stations_service.get_station_inner_id_and_source_by_station_id(
         station_ids=station_ids)
     return station_sources

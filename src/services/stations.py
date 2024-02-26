@@ -271,10 +271,11 @@ class StationsServices:
     async def get_station_inner_id_and_source_by_station_id(
             self,
             station_ids: list[int],
-            station_sources_list=None) -> list[StationSources]:
-        if station_sources_list is None:
-            station_sources_list = []
-        for station_id in station_ids:
-            station_sources_list.append(await self.stations_repo.get_inner_id_and_source_by_id(station_id))
+    ) -> list[StationSources]:
+        station_sources_tasks = [
+            self.stations_repo.get_inner_id_and_source_by_id(station_id=station_id)
+            for station_id in station_ids
+        ]
+        station_sources = await asyncio.gather(*station_sources_tasks)
 
-        return station_sources_list
+        return station_sources

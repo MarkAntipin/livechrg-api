@@ -7,18 +7,24 @@ formatter = logging.Formatter('[%(asctime)s] - #%(levelname)s - %(message)s')
 
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter)
-file_handler = logging.FileHandler('logs.log')
-console_handler.setFormatter(formatter)
-logger.handlers = [console_handler, file_handler]
+logger.addHandler(console_handler)
 
 logger.setLevel(logging.INFO)
 
 
 async def logger_middleware(request: Request, call_next):
-    log_dict = {
+    request_log = {
+        'log_type': 'request',
         'method': request.method,
-        'url': request.url.path
+        'url': request.url.path,
+        'query-params': request.query_params,
+        'path_params': request.path_params,
     }
-    logger.info(log_dict)
+    logger.info(request_log)
+
     response = await call_next(request)
+    response_log = {
+        'log_type': 'response',
+    }
+    logger.info(response_log)
     return response

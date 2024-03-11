@@ -25,6 +25,7 @@ async def logger_middleware(request: Request, call_next):
     response = await call_next(request)
     response_log = {
         'log_type': 'response',
+        'status': response.status_code,
     }
     logger.info(response_log)
     return response

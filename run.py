@@ -1,5 +1,4 @@
 import uvicorn
-
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from settings import AppSettings

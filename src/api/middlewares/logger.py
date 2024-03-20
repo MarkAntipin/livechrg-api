@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import Request
+from starlette.responses import Response
 
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter('[%(asctime)s] - #%(levelname)s - %(message)s')
@@ -12,7 +13,7 @@ logger.addHandler(console_handler)
 logger.setLevel(logging.INFO)
 
 
-async def logger_middleware(request: Request, call_next):
+async def logger_middleware(request: Request, call_next: callable) -> Response:
     request_log = {
         'log_type': 'request',
         'method': request.method,

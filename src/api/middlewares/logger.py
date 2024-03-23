@@ -1,6 +1,6 @@
-from datetime import datetime
 import json
 import logging
+from datetime import datetime
 
 from fastapi import Request
 from starlette.responses import Response
@@ -43,7 +43,7 @@ async def logger_middleware(request: Request, call_next: callable) -> Response:
             'path_params': request.path_params,
         }
         logger.info(request_log)
-    except:
+    except Exception:
         logger.error("Error", exc_info=True)
 
     try:
@@ -54,5 +54,5 @@ async def logger_middleware(request: Request, call_next: callable) -> Response:
         }
         logger.info(response_log)
         return response
-    except:
+    except Exception:
         logger.error("Error", exc_info=True)

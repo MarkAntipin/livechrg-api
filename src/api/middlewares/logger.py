@@ -25,8 +25,8 @@ async def logger_middleware(request: Request, call_next: callable) -> Response:
             'path_params': request.path_params,
         }
         logger.info(request_log)
-    except Exception:
-        logger.error("Error", exc_info=True)
+    except Exception as e:
+        logger.error(e, exc_info=True)
 
     try:
         response = await call_next(request)
@@ -36,5 +36,5 @@ async def logger_middleware(request: Request, call_next: callable) -> Response:
         }
         logger.info(response_log)
         return response
-    except Exception:
-        logger.error("Error", exc_info=True)
+    except Exception as e:
+        logger.error(e, exc_info=True)

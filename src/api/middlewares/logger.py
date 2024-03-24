@@ -1,18 +1,7 @@
-import logging
-
 from fastapi import Request
 from starlette.responses import Response
 
-from src.utils.logging.formatter import JsonFormatter
-
-logger = logging.getLogger(__name__)
-formatter = JsonFormatter()
-
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(formatter)
-logger.addHandler(console_handler)
-
-logger.setLevel(logging.INFO)
+from src.utils.logging.logger import logger
 
 
 async def logger_middleware(request: Request, call_next: callable) -> Response:

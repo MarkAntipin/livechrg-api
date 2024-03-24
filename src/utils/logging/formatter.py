@@ -13,6 +13,7 @@ class JsonFormatter(logging.Formatter):
 
         if isinstance(msg := record.msg, dict):
             log |= msg
+
         if record.exc_info:
             log["exception"] = record.exc_info[0].__name__
             log["exception_message"] = str(record.exc_info[1])

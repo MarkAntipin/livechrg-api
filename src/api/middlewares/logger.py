@@ -5,25 +5,20 @@ from src.utils.logging.logger import logger
 
 
 async def logger_middleware(request: Request, call_next: callable) -> Response:
-    try:
-        request_log = {
-            'log_type': 'request',
-            'method': request.method,
-            'url': request.url.path,
-            'query-params': dict(request.query_params),
-            'path_params': request.path_params,
-        }
-        logger.info(request_log)
-    except Exception as e:
-        logger.error(e, exc_info=True)
+    request_log = {
+        'method': request.method,
+        'url': request.url.path,
+        'query-params': dict(request.query_params),
+        'path_params': request.path_params,
+    }
+    logger.info("Request log", extra={"extra": request_log})
 
     try:
         response = await call_next(request)
         response_log = {
-            'log_type': 'response',
             'status': response.status_code,
         }
-        logger.info(response_log)
+        logger.info("Response log", extra={"extra": response_log})
         return response
     except Exception as e:
         logger.error(e, exc_info=True)

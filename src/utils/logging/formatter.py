@@ -9,10 +9,11 @@ class JsonFormatter(logging.Formatter):
         log = {
             "timestamp": datetime.fromtimestamp(record.created).isoformat(),
             "log_level": record.levelname,
+            "message": record.getMessage()
         }
 
-        if isinstance(msg := record.msg, dict):
-            log |= msg
+        if hasattr(record, "extra"):
+            log |= record.extra
 
         if record.exc_info:
             log["exception"] = record.exc_info[0].__name__

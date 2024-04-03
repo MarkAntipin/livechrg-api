@@ -4,10 +4,13 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from settings import AppSettings, PostgresSettings
+from src.api.middlewares.logger import logger_middleware
 from src.api.routers.inner.stations import router as inner_stations_router
 from src.api.routers.v1.stations import router as stations_router_v1
+from src.utils.logging.logger import setup_logger
 
 
 def setup_middlewares(app: FastAPI) -> None:
@@ -52,4 +55,7 @@ def create_app(settings: AppSettings) -> FastAPI:
 
     app.include_router(stations_router_v1)
     app.include_router(inner_stations_router)
+
+    setup_logger()
+    app.add_middleware(BaseHTTPMiddleware, dispatch=logger_middleware)
     return app

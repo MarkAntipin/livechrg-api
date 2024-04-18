@@ -47,3 +47,8 @@ class AddStation(BaseModel):
 
 class AddStationsRequest(BaseModel):
     stations: list[AddStation]
+
+
+class StationSources(BaseModel):
+    station_id: int
+    sources: list[Source] | None = None

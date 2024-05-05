@@ -125,6 +125,7 @@ services:
     environment:
       - node.name=es01
       - cluster.name=${CLUSTER_NAME}
+      - ES_JAVA_OPTS=-Xms500m -Xmx500m
       - discovery.type=single-node
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - bootstrap.memory_lock=true
@@ -186,6 +187,28 @@ services:
       timeout: 10s
       retries: 120
 
+  filebeat:
+    depends_on:
+      es01:
+        condition: service_healthy
+    image: docker.elastic.co/beats/filebeat:${STACK_VERSION}
+    user: root
+    command:
+      - "-e"
+      - "--strict.perms=false"
+    volumes:
+      - certs:/usr/share/filebeat/certs
+      - filebeatdata01:/usr/share/filebeat/data
+      - "./filebeat_ingest_data/:/usr/share/filebeat/ingest_data/"
+      - "./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro"
+      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    environment:
+      - ELASTIC_USER=elastic
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTIC_HOSTS=https://es01:9200
+      - KIBANA_HOSTS=http://kibana:5601
+
 networks:
     api_network:
     default:
@@ -199,4 +222,6 @@ volumes:
   esdata01:
     driver: local
   kibanadata:
+    driver: local
+  filebeatdata01:
     driver: local

@@ -56,7 +56,7 @@ services:
       retries: 3
 
   setup:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
     user: "0"
@@ -110,22 +110,36 @@ services:
       timeout: 5s
       retries: 120
 
-  elasticsearch:
+  es01:
     depends_on:
       setup:
         condition: service_healthy
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.2
-    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     labels:
       co.elastic.logs/module: elasticsearch
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
       - esdata01:/usr/share/elasticsearch/data
     ports:
-      - 9200:9200
-    restart: always
+      - ${ES_PORT}:9200
     environment:
+      - node.name=es01
+      - cluster.name=${CLUSTER_NAME}
       - discovery.type=single-node
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=certs/es01/es01.key
+      - xpack.security.http.ssl.certificate=certs/es01/es01.crt
+      - xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.key=certs/es01/es01.key
+      - xpack.security.transport.ssl.certificate=certs/es01/es01.crt
+      - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.license.self_generated.type=${LICENSE}
+    mem_limit: ${ES_MEM_LIMIT}
     ulimits:
       memlock:
         soft: -1
@@ -142,29 +156,53 @@ services:
 
   kibana:
     depends_on:
-      - elasticsearch
-    image: docker.elastic.co/kibana/kibana:8.13.2
-    container_name: kibana
+      es01:
+        condition: service_healthy
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    labels:
+      co.elastic.logs/module: kibana
     volumes:
-      - kibana-data:/usr/share/kibana/data
+      - certs:/usr/share/kibana/config/certs
+      - kibanadata:/usr/share/kibana/data
     ports:
-      - 5601:5601
-    restart: always
+      - ${KIBANA_PORT}:5601
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=https://es01:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
+      - XPACK_SECURITY_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+      - XPACK_REPORTING_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+    mem_limit: ${KB_MEM_LIMIT}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
 
 networks:
     api_network:
+    default:
+      name: elastic
+      external: false
 
 volumes:
   postgres-data:
-  elasticsearch-data:
-    driver: local
-  kibana-data:
-    driver: local
   certs:
     driver: local
   esdata01:
     driver: local
   kibanadata:
+    driver: local
+  metricbeatdata01:
+    driver: local
+  filebeatdata01:
+    driver: local
+  logstashdata01:
     driver: local
